@@ -1,0 +1,59 @@
+group 'com.ipmus'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'kotlin'
+apply plugin: 'war'
+apply plugin: 'org.akhikhl.gretty'
+apply plugin: 'com.google.cloud.tools.appengine'
+
+sourceCompatibility = 1.8
+
+buildscript {      // Configuration for building
+    ext.kotlin_version = '1.1.1'
+    ext.xodus_version = '1.0.6'
+    ext.jersey_version = '2.7'
+
+    repositories {
+        jcenter()      // Bintray's repository - a fast Maven Central mirror & more
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.cloud.tools:appengine-gradle-plugin:+'
+        classpath 'org.akhikhl.gretty:gretty:+'
+    }
+}
+
+
+repositories {
+    maven {
+        url 'https://maven-central.storage.googleapis.com'             // Google's mirror of Maven Central
+    }
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.glassfish.jersey.containers:jersey-container-servlet-core:$jersey_version"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.8.7"
+    compile "org.jetbrains.xodus:xodus-openAPI:$xodus_version"
+    compile "org.jetbrains.xodus:xodus-entity-store:$xodus_version"
+    providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
+    providedCompile 'com.google.appengine:appengine:+'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+gretty {
+    httpPort = 8080
+    contextPath = '/'
+    servletContainer = 'jetty9'  // What App Engine Flexible uses
+}
+
+appengine {
+
+    deploy {   // deploy configuration
+        stopPreviousVersion = true  // default - stop the current version
+        promote = true              // default - & make this the current version
+    }
+
+}
