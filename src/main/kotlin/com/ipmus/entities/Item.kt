@@ -12,7 +12,6 @@ import jetbrains.exodus.entitystore.Entity
 data class Item(override val entityID: String, val cancelled: Boolean, val date: String, val poNum: String,
                 val vendorID: String, val designColorID: String, val shippedYards: Double, val FOB: Int, val LDP: Int,
                 val customerID: String, val customerPO: String, val millETS: String) : com.ipmus.entities.Entity {
-    //val shipment: Shipment?) {
     init {
         // sanity check dates
         LocalDate.parse(date)
@@ -48,7 +47,7 @@ data class Item(override val entityID: String, val cancelled: Boolean, val date:
         } else {
             item.setProperty("cancelled", "false");
         }
-        item.setProperty("date", date.toString())
+        item.setProperty("date", date)
         item.setProperty("poNum", poNum)
         item.setProperty("shippedYards", "%.2f".format(shippedYards))
         item.setProperty("FOB", FOB.toString())
