@@ -13,7 +13,7 @@ data class Broker(override val entityID: String, val brokerName: String) : com.i
             this(entityID = entity.toIdString(), brokerName = entity.getProperty("brokerName") as String)
 
     override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) {
-        val customer = txn.newEntity("Broker");
-        customer.setProperty("brokerName", brokerName);
+        val broker = txn.newEntity("Broker");
+        broker.setProperty("brokerName", brokerName);
     }
 }

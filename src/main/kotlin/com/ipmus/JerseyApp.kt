@@ -13,7 +13,8 @@ import javax.ws.rs.ext.ContextResolver
 
 @ApplicationPath("/")
 class JerseyApp : ResourceConfig(setOf(ItemResource::class.java, CustomerResource::class.java,
-        BrokerResource::class.java, VesselResource::class.java, VendorResource::class.java )) {
+        BrokerResource::class.java, VesselResource::class.java, VendorResource::class.java,
+        DesignResource::class.java, DesignColorResource::class.java)) {
     init {
         register(ContextResolver<ObjectMapper> { ObjectMapper().registerModule(KotlinModule()) })
     }

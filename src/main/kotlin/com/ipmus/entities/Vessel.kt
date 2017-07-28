@@ -13,7 +13,7 @@ data class Vessel(override val entityID: String, val vesselName: String) : com.i
             this(entityID = entity.toIdString(), vesselName = entity.getProperty("vesselName") as String)
 
     override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) {
-        val customer = txn.newEntity("Vessel");
-        customer.setProperty("vesselName", vesselName);
+        val newEntity = txn.newEntity("Vessel");
+        newEntity.setProperty("vesselName", vesselName);
     }
 }

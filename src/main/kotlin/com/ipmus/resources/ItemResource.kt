@@ -16,14 +16,16 @@ import javax.ws.rs.core.Response
 
 @Path("items")
 class ItemResource {
+    val resourceType = Item.type
+
     @GET
     @Produces("application/json")
-    fun hello(): String {
+    fun getAll(): String {
         val out = ByteArrayOutputStream()
         val mapper = jacksonObjectMapper()
         val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
         val items: List<Item> = entityStore.computeInReadonlyTransaction { txn ->
-            txn.getAll("Item").map { Item(it) }
+            txn.getAll(resourceType).map { Item(it) }
         }
         mapper.writeValue(out, items)
         entityStore.close()
@@ -36,6 +38,18 @@ class ItemResource {
         val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
         entityStore.executeInTransaction { txn ->
             item.save(txn, entityStore)
+        }
+        entityStore.close()
+        return Response.status(200).build()
+    }
+
+    @DELETE
+    fun deleteAll() : Response {
+        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
+        entityStore.executeInTransaction { txn ->
+            txn.getAll(resourceType).forEach {
+                it.delete()
+            }
         }
         entityStore.close()
         return Response.status(200).build()

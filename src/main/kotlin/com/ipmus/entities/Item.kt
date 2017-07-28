@@ -1,7 +1,6 @@
 package com.ipmus.entities
 
 import java.time.LocalDate
-import jetbrains.exodus.bindings.StringBinding
 import jetbrains.exodus.entitystore.*
 import jetbrains.exodus.entitystore.Entity
 
@@ -11,7 +10,7 @@ import jetbrains.exodus.entitystore.Entity
  */
 
 data class Item(override val entityID: String, val cancelled: Boolean, val date: String, val poNum: String,
-        //val vendor: Vendor,
+        val vendorID: String, val designColorID: String,
         //val design: DesignColor,
                 val shippedYards: Double, val FOB: Int, val LDP: Int,
                 val customerID: String,
@@ -32,6 +31,8 @@ data class Item(override val entityID: String, val cancelled: Boolean, val date:
                     cancelled = entity.getProperty("cancelled") == "true",
                     date = entity.getProperty("date") as String,
                     poNum = entity.getProperty("poNum") as String,
+                    vendorID = entity.getLink("vendor")!!.toIdString(),
+                    designColorID = entity.getLink("designColor")!!.toIdString(),
                     shippedYards = (entity.getProperty("shippedYards") as String).toDouble(),
                     FOB = (entity.getProperty("FOB") as String).toInt(),
                     LDP = (entity.getProperty("LDP") as String).toInt(),
@@ -44,7 +45,7 @@ data class Item(override val entityID: String, val cancelled: Boolean, val date:
      * Saves the entity to the data store.
      */
     override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) {
-        val item = txn.newEntity("Item");
+        val item = txn.newEntity(type);
         if (cancelled) {
             item.setProperty("cancelled", "true");
         } else {
@@ -59,8 +60,19 @@ data class Item(override val entityID: String, val cancelled: Boolean, val date:
         item.setProperty("millETS", millETS.toString())
 
         val customerEntityId = PersistentEntityId.toEntityId(customerID, store)
-        val customeEntity = txn.getEntity(customerEntityId)
-        item.addLink("customer", customeEntity)
+        val customerEntity = txn.getEntity(customerEntityId)
+        item.addLink("customer", customerEntity)
+
+        val vendorEntityId = PersistentEntityId.toEntityId(vendorID, store)
+        val vendorEntity = txn.getEntity(vendorEntityId)
+        item.addLink("vendor", vendorEntity)
+
+        val designColorEntityId = PersistentEntityId.toEntityId(designColorID, store)
+        val designColorEntity = txn.getEntity(designColorEntityId)
+        item.addLink("designColor", designColorEntity)
     }
 
+    companion object {
+        val type = "Item"
+    }
 }
