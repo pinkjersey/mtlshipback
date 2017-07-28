@@ -1,0 +1,414 @@
+{
+	"variables": [],
+	"info": {
+		"name": "mtlship",
+		"_postman_id": "11cefbdb-80b8-0bf8-b3de-3e92e74031c6",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Item",
+			"description": "",
+			"item": [
+				{
+					"name": "localhost:8080/items",
+					"request": {
+						"url": "localhost:8080/items",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"entityID\":\"\", \n\t\"cancelled\":false, \n\t\"date\": \"2007-12-03\", \n\t\"poNum\":\"PO123\", \n\t\"vendorID\":\"4-0\",\n\t\"designColorID\":\"6-0\",\n\t\"shippedYards\": 10.3, \n\t\"FOB\":355, \"LDP\": 500, \"customerID\":\"0-0\", \"customerPO\":\"custPO\", \"millETS\": \"2008-12-01\"}"
+						},
+						"description": "Create new item"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/items",
+					"request": {
+						"url": "localhost:8080/items",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get all items"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/items",
+					"request": {
+						"url": "localhost:8080/items",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": "Delete all items"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Customer",
+			"description": "",
+			"item": [
+				{
+					"name": "localhost:8080/customers",
+					"request": {
+						"url": "localhost:8080/customers",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get all customers"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/customers",
+					"request": {
+						"url": "localhost:8080/customers",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"entityID\":\"\", \"customerName\":\"bobcat\"}"
+						},
+						"description": "Create new customer"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Broker",
+			"description": "",
+			"item": [
+				{
+					"name": "localhost:8080/brokers",
+					"request": {
+						"url": "localhost:8080/brokers",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get all brokers"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/brokers",
+					"request": {
+						"url": "localhost:8080/brokers",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"entityID\":\"\", \"brokerName\":\"Broker\"}"
+						},
+						"description": "Create new broker"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vessel",
+			"description": "",
+			"item": [
+				{
+					"name": "localhost:8080/vessels",
+					"request": {
+						"url": "localhost:8080/vessels",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get all vessels"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/vessels",
+					"request": {
+						"url": "localhost:8080/vessels",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"entityID\":\"\", \"vesselName\":\"Vessel\"}"
+						},
+						"description": "Create new vessel"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Vendor",
+			"description": "",
+			"item": [
+				{
+					"name": "localhost:8080/vendors",
+					"request": {
+						"url": "localhost:8080/vendors",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get all vendors"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/vendors",
+					"request": {
+						"url": "localhost:8080/vendors",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"entityID\":\"\", \"vendorName\":\"Vendor\"}"
+						},
+						"description": "Create new vendor"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Design",
+			"description": "",
+			"item": [
+				{
+					"name": "localhost:8080/designs",
+					"request": {
+						"url": "localhost:8080/designs",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get all designs"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/designs",
+					"request": {
+						"url": "localhost:8080/designs",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"entityID\":\"\", \"designName\":\"Sam\"}"
+						},
+						"description": "Create new design"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "DesignColor",
+			"description": "",
+			"item": [
+				{
+					"name": "localhost:8080/designcolors",
+					"request": {
+						"url": "localhost:8080/designcolors",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get all design colors"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/designcolors",
+					"request": {
+						"url": "localhost:8080/designcolors",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"entityID\":\"\", \"designID\":\"5-0\", \"color\":\"Blue\"}"
+						},
+						"description": "Create new design color"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ShipmentType",
+			"description": "",
+			"item": [
+				{
+					"name": "localhost:8080/shipmenttype",
+					"request": {
+						"url": "localhost:8080/shipmenttype",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get all shipment types"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/shipmenttypes",
+					"request": {
+						"url": "localhost:8080/shipmenttype",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"entityID\":\"\", \"shipmentType\":\"Ship\"}"
+						},
+						"description": "Create new shipment type"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Shipment",
+			"description": "",
+			"item": [
+				{
+					"name": "localhost:8080/shipments",
+					"request": {
+						"url": "localhost:8080/shipments",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get all shipments"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/shipments",
+					"request": {
+						"url": "localhost:8080/shipments",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"entityID\":\"\", \"shipmentTypeID\":\"7-0\", \"ETA\":\"2009-12-03\", \"status\":\"S\", \"vesselID\": \"3-0\", \"brokerID\": \"2-0\", \"containerID\":\"9-1\"}"
+						},
+						"description": "Create new shipment"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/shipments",
+					"request": {
+						"url": "localhost:8080/shipments",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": "Delete all shipments"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Container",
+			"description": "",
+			"item": [
+				{
+					"name": "localhost:8080/containers",
+					"request": {
+						"url": "localhost:8080/containers",
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"description": "Get all containers"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/containers",
+					"request": {
+						"url": "localhost:8080/containers",
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"entityID\":\"\", \"containerName\":\"Container\",\"containerType\":\"type\",\"items\":[\"1-5\",\"1-6\"]}"
+						},
+						"description": "Create new container"
+					},
+					"response": []
+				},
+				{
+					"name": "localhost:8080/containers",
+					"request": {
+						"url": "localhost:8080/containers",
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"description": "Delete all containers"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
