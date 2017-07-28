@@ -1,4 +1,4 @@
-package com.ipmus
+package com.ipmus.resources
 
 /**
  * Created by mozturk on 7/26/2017.
@@ -6,16 +6,16 @@ package com.ipmus
 
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ipmus.Configuration
 import com.ipmus.entities.Item
 import jetbrains.exodus.entitystore.PersistentEntityStores
 import java.io.ByteArrayOutputStream
-import javax.ws.rs.GET
-import javax.ws.rs.Path
-import javax.ws.rs.Produces
+import javax.ws.rs.*
+import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.Response
 
-@Path("item")
+@Path("items")
 class ItemResource {
-    @Path("items")
     @GET
     @Produces("application/json")
     fun hello(): String {
@@ -28,5 +28,16 @@ class ItemResource {
         mapper.writeValue(out, items)
         entityStore.close()
         return out.toString()
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    fun newItem(item: Item) : Response {
+        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
+        entityStore.executeInTransaction { txn ->
+            item.save(txn, entityStore)
+        }
+        entityStore.close()
+        return Response.status(200).build()
     }
 }

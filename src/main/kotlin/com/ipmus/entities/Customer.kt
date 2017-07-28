@@ -1,18 +1,18 @@
 package com.ipmus.entities
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import jetbrains.exodus.entitystore.Entity
+import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
 import jetbrains.exodus.entitystore.StoreTransaction
 
 /**
- * Created by mdozturk on 7/27/17.
+ * This entity represents customers.
  */
 
-data class Customer(val entityID: String, val customerName: String) {
+data class Customer(override val entityID: String, val customerName: String) : com.ipmus.entities.Entity {
     constructor (entity: Entity) :
             this(entityID = entity.toIdString(), customerName = entity.getProperty("customerName") as String)
 
-    fun save(txn: StoreTransaction) {
+    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) {
         val customer = txn.newEntity("Customer");
         customer.setProperty("customerName", customerName);
     }
