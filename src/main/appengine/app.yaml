@@ -12,4 +12,7 @@ runtime_config:  # Optional
 
 manual_scaling:
   instances: 1
+
+env_variables:
+  mtl_environment: 'MAC'
 # [END runtime]

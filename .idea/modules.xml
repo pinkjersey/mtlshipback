@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/mtlshipback.iml" filepath="$PROJECT_DIR$/.idea/mtlshipback.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mtlshipback_main.iml" filepath="$PROJECT_DIR$/.idea/modules/mtlshipback_main.iml" group="mtlshipback" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/mtlshipback_test.iml" filepath="$PROJECT_DIR$/.idea/modules/mtlshipback_test.iml" group="mtlshipback" />
     </modules>
   </component>
 </project>

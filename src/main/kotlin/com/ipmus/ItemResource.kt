@@ -21,7 +21,7 @@ class ItemResource {
     fun hello(): String {
         val out = ByteArrayOutputStream()
         val mapper = jacksonObjectMapper()
-        val entityStore = PersistentEntityStores.newInstance("/home/mozturk/.shipData")
+        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
         val items: List<Item> = entityStore.computeInReadonlyTransaction { txn ->
             txn.getAll("Item").map { Item(it) }
         }
