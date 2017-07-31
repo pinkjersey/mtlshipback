@@ -17,6 +17,7 @@ class JerseyApp : ResourceConfig(setOf(ItemResource::class.java, CustomerResourc
         DesignResource::class.java, DesignColorResource::class.java, ShipmentTypeResource::class.java,
         ShipmentResource::class.java, ContainerResource::class.java)) {
     init {
+        register(CORSResponseFilter::class.java)
         register(ContextResolver<ObjectMapper> { ObjectMapper().registerModule(KotlinModule()) })
     }
 
