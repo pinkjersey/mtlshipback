@@ -40,7 +40,7 @@ data class Item(override val entityID: String, val cancelled: Boolean, val date:
     /**
      * Saves the entity to the data store.
      */
-    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) {
+    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
         val item = txn.newEntity(type);
         if (cancelled) {
             item.setProperty("cancelled", "true");
@@ -66,6 +66,8 @@ data class Item(override val entityID: String, val cancelled: Boolean, val date:
         val designColorEntityId = PersistentEntityId.toEntityId(designColorID, store)
         val designColorEntity = txn.getEntity(designColorEntityId)
         item.addLink("designColor", designColorEntity)
+
+        return item.toIdString()
     }
 
     companion object {

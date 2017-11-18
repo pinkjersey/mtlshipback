@@ -12,8 +12,9 @@ data class Vendor(override val entityID: String, val vendorName: String) : com.i
     constructor (entity: Entity) :
             this(entityID = entity.toIdString(), vendorName = entity.getProperty("vendorName") as String)
 
-    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) {
-        val vendor = txn.newEntity("Vendor");
-        vendor.setProperty("vendorName", vendorName);
+    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
+        val vendor = txn.newEntity("Vendor")
+        vendor.setProperty("vendorName", vendorName)
+        return vendor.toIdString()
     }
 }

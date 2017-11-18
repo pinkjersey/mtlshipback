@@ -12,9 +12,10 @@ data class ShipmentType(override val entityID: String, val shipmentType: String)
     constructor (entity: Entity) :
             this(entityID = entity.toIdString(), shipmentType = entity.getProperty("shipmentType") as String)
 
-    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) {
-        val newEntity = txn.newEntity(type);
-        newEntity.setProperty("shipmentType", shipmentType);
+    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
+        val newEntity = txn.newEntity(type)
+        newEntity.setProperty("shipmentType", shipmentType)
+        return newEntity.toIdString()
     }
 
     companion object {

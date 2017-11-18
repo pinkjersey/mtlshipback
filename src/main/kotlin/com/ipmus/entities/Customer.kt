@@ -12,8 +12,9 @@ data class Customer(override val entityID: String, val customerName: String) : c
     constructor (entity: Entity) :
             this(entityID = entity.toIdString(), customerName = entity.getProperty("customerName") as String)
 
-    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) {
+    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
         val customer = txn.newEntity("Customer");
         customer.setProperty("customerName", customerName);
+        return customer.toIdString()
     }
 }

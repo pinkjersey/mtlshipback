@@ -18,13 +18,14 @@ data class DesignColor(override val entityID: String, val designID: String, val 
                     color = entity.getProperty("color") as String
             )
 
-    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) {
+    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
         val designColor = txn.newEntity(type);
         designColor.setProperty("color", color);
 
         val designEntityId = PersistentEntityId.toEntityId(designID, store)
         val designEntity = txn.getEntity(designEntityId)
         designColor.addLink("design", designEntity)
+        return designColor.toIdString()
     }
 
     companion object {

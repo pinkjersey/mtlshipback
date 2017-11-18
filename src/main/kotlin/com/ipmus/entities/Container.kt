@@ -20,7 +20,7 @@ data class Container(override val entityID: String, val containerName: String, v
                     }
             )
 
-    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) {
+    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
         val newEntity = txn.newEntity(type);
         newEntity.setProperty("containerName", containerName);
         newEntity.setProperty("containerType", containerType);
@@ -30,6 +30,8 @@ data class Container(override val entityID: String, val containerName: String, v
             val itemEntity = txn.getEntity(itemEntityId)
             newEntity.addLink("item", itemEntity)
         }
+
+        return newEntity.toIdString()
     }
 
     companion object {

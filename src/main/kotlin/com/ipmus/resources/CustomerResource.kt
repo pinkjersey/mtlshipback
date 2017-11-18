@@ -39,8 +39,33 @@ class CustomerResource {
 
         val out = ByteArrayOutputStream()
         val mapper = jacksonObjectMapper()
+        val customer = readCustomer(entityID)
+        mapper.writeValue(out, customer)
+
+        return out.toString()
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces("application/json")
+    fun newCustomer(customer: Customer) : String {
+        val out = ByteArrayOutputStream()
+        val mapper = jacksonObjectMapper()
         val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        val xodusEntityId = PersistentEntityId.toEntityId(entityID, entityStore)
+        var newCustomerID: String? = null
+        entityStore.executeInTransaction { txn ->
+            newCustomerID = customer.save(txn, entityStore)
+        }
+        entityStore.close()
+        val cID = newCustomerID ?: throw NotFoundException()
+        val rc = readCustomer(cID)
+        mapper.writeValue(out, rc)
+        return out.toString()
+    }
+
+    fun readCustomer(customerID: String) : Customer {
+        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
+        val xodusEntityId = PersistentEntityId.toEntityId(customerID, entityStore)
         val customer = entityStore.computeInReadonlyTransaction { txn ->
             try {
                 val customerEntity = txn.getEntity(xodusEntityId)
@@ -50,19 +75,7 @@ class CustomerResource {
                 throw NotFoundException()
             }
         }
-        mapper.writeValue(out, customer)
         entityStore.close()
-        return out.toString()
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    fun newCustomer(customer: Customer) : Response {
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        entityStore.executeInTransaction { txn ->
-            customer.save(txn, entityStore)
-        }
-        entityStore.close()
-        return Response.status(200).build()
+        return customer
     }
 }
