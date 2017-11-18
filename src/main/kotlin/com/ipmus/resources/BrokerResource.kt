@@ -38,6 +38,31 @@ class BrokerResource {
     fun getBroker(@PathParam("entityID") entityID: String) : String {
         val out = ByteArrayOutputStream()
         val mapper = jacksonObjectMapper()
+        val broker = readBroker(entityID)
+        mapper.writeValue(out, broker)
+
+        return out.toString()
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces("application/json")
+    fun newBroker(broker: Broker) : String {
+        val out = ByteArrayOutputStream()
+        val mapper = jacksonObjectMapper()
+        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
+        var newBrokerID: String? = null
+        entityStore.executeInTransaction { txn ->
+            newBrokerID = broker.save(txn, entityStore)
+        }
+        entityStore.close()
+        val cID = newBrokerID ?: throw NotFoundException()
+        val rc = readBroker(cID)
+        mapper.writeValue(out, rc)
+        return out.toString()
+    }
+
+    fun readBroker(entityID: String) : Broker {
         val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
         val xodusEntityId = PersistentEntityId.toEntityId(entityID, entityStore)
         val broker = entityStore.computeInReadonlyTransaction { txn ->
@@ -49,19 +74,7 @@ class BrokerResource {
                 throw NotFoundException()
             }
         }
-        mapper.writeValue(out, broker)
         entityStore.close()
-        return out.toString()
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    fun newBroker(broker: Broker) : Response {
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        entityStore.executeInTransaction { txn ->
-            broker.save(txn, entityStore)
-        }
-        entityStore.close()
-        return Response.status(200).build()
+        return broker
     }
 }
