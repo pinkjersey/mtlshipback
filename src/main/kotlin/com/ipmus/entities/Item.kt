@@ -11,7 +11,7 @@ import jetbrains.exodus.entitystore.Entity
 
 data class Item(override val entityID: String, val cancelled: Boolean, val date: String, val poNum: String,
                 val vendorID: String, val designColorID: String, val shippedYards: Double, val FOB: Int, val LDP: Int,
-                val customerID: String, val customerPO: String, val millETS: String) : com.ipmus.entities.Entity {
+                val customerPOID: String, val millETS: String) : com.ipmus.entities.Entity {
     init {
         // sanity check dates
         LocalDate.parse(date)
@@ -32,8 +32,7 @@ data class Item(override val entityID: String, val cancelled: Boolean, val date:
                     shippedYards = (entity.getProperty("shippedYards") as String).toDouble(),
                     FOB = (entity.getProperty("FOB") as String).toInt(),
                     LDP = (entity.getProperty("LDP") as String).toInt(),
-                    customerID = entity.getLink("customer")!!.toIdString(),
-                    customerPO = entity.getProperty("customerPO") as String,
+                    customerPOID = entity.getLink("customerPO")!!.toIdString(),
                     millETS = entity.getProperty("millETS") as String
             )
 
@@ -52,12 +51,11 @@ data class Item(override val entityID: String, val cancelled: Boolean, val date:
         item.setProperty("shippedYards", "%.2f".format(shippedYards))
         item.setProperty("FOB", FOB.toString())
         item.setProperty("LDP", LDP.toString())
-        item.setProperty("customerPO", customerPO)
         item.setProperty("millETS", millETS.toString())
 
-        val customerEntityId = PersistentEntityId.toEntityId(customerID, store)
-        val customerEntity = txn.getEntity(customerEntityId)
-        item.addLink("customer", customerEntity)
+        val customerPOEntityId = PersistentEntityId.toEntityId(customerPOID, store)
+        val customerPOEntity = txn.getEntity(customerPOEntityId)
+        item.addLink("customerPO", customerPOEntity)
 
         val vendorEntityId = PersistentEntityId.toEntityId(vendorID, store)
         val vendorEntity = txn.getEntity(vendorEntityId)
