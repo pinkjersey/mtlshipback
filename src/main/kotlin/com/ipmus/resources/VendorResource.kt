@@ -38,6 +38,31 @@ class VendorResource {
     fun getVendor(@PathParam("entityID") entityID: String) : String {
         val out = ByteArrayOutputStream()
         val mapper = jacksonObjectMapper()
+        val broker = readVendor(entityID)
+        mapper.writeValue(out, broker)
+
+        return out.toString()
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces("application/json")
+    fun newVendor(vendor: Vendor) : String {
+        val out = ByteArrayOutputStream()
+        val mapper = jacksonObjectMapper()
+        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
+        var newVendorID: String? = null
+        entityStore.executeInTransaction { txn ->
+            newVendorID = vendor.save(txn, entityStore)
+        }
+        entityStore.close()
+        val cID = newVendorID ?: throw NotFoundException()
+        val rc = readVendor(cID)
+        mapper.writeValue(out, rc)
+        return out.toString()
+    }
+
+    fun readVendor(entityID: String) : Vendor {
         val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
         val xodusEntityId = PersistentEntityId.toEntityId(entityID, entityStore)
         val vendor = entityStore.computeInReadonlyTransaction { txn ->
@@ -49,19 +74,7 @@ class VendorResource {
                 throw NotFoundException()
             }
         }
-        mapper.writeValue(out, vendor)
         entityStore.close()
-        return out.toString()
-    }
-
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    fun newVendor(vendor: Vendor) : Response {
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        entityStore.executeInTransaction { txn ->
-            vendor.save(txn, entityStore)
-        }
-        entityStore.close()
-        return Response.status(200).build()
+        return vendor
     }
 }
