@@ -11,6 +11,7 @@
 .idea/**/gradle.xml
 .idea/**/libraries
 .idea/**/modules
+.idea
 
 .gradle
 /build/
