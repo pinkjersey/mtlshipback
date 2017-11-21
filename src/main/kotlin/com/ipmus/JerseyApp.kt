@@ -6,6 +6,7 @@ package com.ipmus
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.ipmus.entities.PurchaseOrder
 import com.ipmus.resources.*
 import org.glassfish.jersey.server.ResourceConfig
 import javax.ws.rs.ApplicationPath
@@ -15,7 +16,7 @@ import javax.ws.rs.ext.ContextResolver
 class JerseyApp : ResourceConfig(setOf(ItemResource::class.java, CustomerResource::class.java,
         BrokerResource::class.java, VesselResource::class.java, VendorResource::class.java,
         DesignResource::class.java, DesignColorResource::class.java, ShipmentTypeResource::class.java,
-        ShipmentResource::class.java, ContainerResource::class.java)) {
+        ShipmentResource::class.java, ContainerResource::class.java, PurchaseOrder::class.java)) {
     init {
         register(CORSResponseFilter::class.java)
         register(ContextResolver<ObjectMapper> { ObjectMapper().registerModule(KotlinModule()) })

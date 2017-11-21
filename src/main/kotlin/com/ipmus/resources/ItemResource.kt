@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response
 
 @Path("items")
 class ItemResource {
-    val resourceType = Item.type
+    private val resourceType = Item.type
 
     @GET
     @Produces("application/json")
