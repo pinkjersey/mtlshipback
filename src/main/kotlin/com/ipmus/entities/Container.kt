@@ -10,6 +10,8 @@ import jetbrains.exodus.entitystore.StoreTransaction
  */
 
 data class Container(override val entityID: String, val containerName: String, val containerType: String, val items: List<String>) : com.ipmus.entities.Entity {
+
+
     constructor (entity: Entity) :
             this(
                     entityID = entity.toIdString(),
@@ -33,7 +35,6 @@ data class Container(override val entityID: String, val containerName: String, v
 
         return newEntity.toIdString()
     }
-
     companion object {
         val type = "Container"
     }

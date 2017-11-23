@@ -7,4 +7,5 @@ interface Entity {
     val entityID: String
 
     fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String
+
 }

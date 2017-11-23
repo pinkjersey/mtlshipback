@@ -13,6 +13,8 @@ import jetbrains.exodus.entitystore.Entity
 data class Shipment(override val entityID: String, val shipmentTypeID: String,
                     val ETA: String, val vesselID: String, val brokerID: String, val containerID: String,
                     val status: ShipmentStatus) : com.ipmus.entities.Entity {
+
+
     init {
         // sanity check dates
         LocalDate.parse(ETA)

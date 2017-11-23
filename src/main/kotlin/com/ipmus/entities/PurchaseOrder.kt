@@ -5,6 +5,7 @@ import jetbrains.exodus.entitystore.Entity
 
 data class PurchaseOrder(override val entityID: String, val customerID: String, val customerPO: String)
     : com.ipmus.entities.Entity {
+
     constructor(entity: Entity) :
             this(
                     entityID = entity.toIdString(),
@@ -27,4 +28,5 @@ data class PurchaseOrder(override val entityID: String, val customerID: String, 
     companion object {
         val type = "PurchaseOrder"
     }
+
 }

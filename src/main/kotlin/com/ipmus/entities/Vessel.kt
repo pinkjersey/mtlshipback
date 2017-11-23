@@ -9,12 +9,17 @@ import jetbrains.exodus.entitystore.StoreTransaction
  */
 
 data class Vessel(override val entityID: String, val vesselName: String) : com.ipmus.entities.Entity {
+
     constructor (entity: Entity) :
             this(entityID = entity.toIdString(), vesselName = entity.getProperty("vesselName") as String)
 
     override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
-        val newEntity = txn.newEntity("Vessel");
+        val newEntity = txn.newEntity(type);
         newEntity.setProperty("vesselName", vesselName);
         return newEntity.toIdString()
+    }
+
+    companion object {
+        val type = "Vessel"
     }
 }

@@ -12,6 +12,8 @@ import jetbrains.exodus.entitystore.Entity
 data class Item(override val entityID: String, val cancelled: Boolean, val date: String, val poNum: String,
                 val vendorID: String, val designColorID: String, val shippedYards: Double, val FOB: Int, val LDP: Int,
                 val customerPOID: String, val millETS: String) : com.ipmus.entities.Entity {
+
+
     init {
         // sanity check dates
         LocalDate.parse(date)

@@ -19,6 +19,6 @@ data class ShipmentType(override val entityID: String, val shipmentType: String)
     }
 
     companion object {
-        val type = "ShipmentType"
+         val type = "ShipmentType"
     }
 }

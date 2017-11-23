@@ -9,6 +9,7 @@ import jetbrains.exodus.entitystore.StoreTransaction
  */
 
 data class Design(override val entityID: String, val designName: String) : com.ipmus.entities.Entity {
+
     constructor (entity: Entity) :
             this(entityID = entity.toIdString(), designName = entity.getProperty("designName") as String)
 
