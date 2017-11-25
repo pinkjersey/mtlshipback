@@ -17,50 +17,23 @@ import javax.ws.rs.core.Response
  * Created by mdozturk on 7/27/17.
  */
 @Path("designcolors")
-class DesignColorResource {
+class DesignColorResource : GenericResource<DesignColor>(DesignColor.type, ::DesignColor) {
     @GET
     @Produces("application/json")
     fun designColors(): String {
-        val out = ByteArrayOutputStream()
-        val mapper = jacksonObjectMapper()
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        val designColors = entityStore.computeInReadonlyTransaction { txn ->
-            txn.getAll(DesignColor.type).map { DesignColor(it) }
-        }
-        mapper.writeValue(out, designColors)
-        entityStore.close()
-        return out.toString()
+        return getAll()
     }
 
     @Path("/{entityID}")
     @GET
     @Produces("application/json")
     fun getDesignColor(@PathParam("entityID") entityID: String): String {
-        val out = ByteArrayOutputStream()
-        val mapper = jacksonObjectMapper()
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        val xodusEntityId = PersistentEntityId.toEntityId(entityID, entityStore)
-        val designColor = entityStore.computeInReadonlyTransaction { txn ->
-            try {
-                val designColorEntity = txn.getEntity(xodusEntityId)
-                DesignColor(designColorEntity)
-            } catch (e: EntityRemovedInDatabaseException) {
-                throw NotFoundException()
-            }
-        }
-        mapper.writeValue(out, designColor)
-        entityStore.close()
-        return out.toString()
+        return getSpecific(entityID)
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    fun newDesignColor(designColor: DesignColor): Response {
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        entityStore.executeInTransaction { txn ->
-            designColor.save(txn, entityStore)
-        }
-        entityStore.close()
-        return Response.status(200).build()
+    fun newDesignColor(entity: DesignColor): String {
+        return newEntity(entity)
     }
 }

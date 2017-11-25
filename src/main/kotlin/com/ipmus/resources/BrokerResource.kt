@@ -27,7 +27,7 @@ class BrokerResource : GenericResource<Broker>(Broker.type, ::Broker) {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces("application/json")
-    fun newBroker(entity: com.ipmus.entities.Entity) : String {
+    fun newBroker(entity: Broker) : String {
         return newEntity(entity)
     }
 }

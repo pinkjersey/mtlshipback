@@ -24,7 +24,9 @@ data class DesignColor(override val entityID: String, val designID: String, val 
 
         val designEntityId = PersistentEntityId.toEntityId(designID, store)
         val designEntity = txn.getEntity(designEntityId)
-        designColor.addLink("design", designEntity)
+        designEntity.addLink("colors", designColor)
+        // design colors can only have one design, to enforce this, the setLink API is used
+        designColor.setLink("design", designEntity)
         return designColor.toIdString()
     }
 

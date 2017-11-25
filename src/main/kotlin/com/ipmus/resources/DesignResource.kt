@@ -1,7 +1,14 @@
 package com.ipmus.resources
 
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.ipmus.Configuration
 import com.ipmus.entities.Design
+import com.ipmus.entities.DesignColor
+import jetbrains.exodus.entitystore.EntityRemovedInDatabaseException
+import jetbrains.exodus.entitystore.PersistentEntityId
+import jetbrains.exodus.entitystore.PersistentEntityStores
+import java.io.ByteArrayOutputStream
 import javax.ws.rs.*
 import javax.ws.rs.POST
 import javax.ws.rs.core.MediaType
@@ -25,10 +32,38 @@ class DesignResource : GenericResource<Design>(Design.type, ::Design) {
         return getSpecific(entityID)
     }
 
+    @Path("/{entityID}/colors")
+    @GET
+    @Produces("application/json")
+    fun designColors(@PathParam("entityID") entityID: String) : String {
+        val out = ByteArrayOutputStream()
+        val mapper = jacksonObjectMapper()
+        // we need to read the design entity from xodus, get the designColor entities
+        // and convert these to the local entity type
+        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
+        val xodusEntityId = PersistentEntityId.toEntityId(entityID, entityStore)
+        val colors = entityStore.computeInReadonlyTransaction { txn ->
+            try {
+                val entity = txn.getEntity(xodusEntityId)
+                entity.getLinks("colors").map {
+                    DesignColor(it)
+                }
+            }
+            catch (e: EntityRemovedInDatabaseException) {
+                throw NotFoundException()
+            }
+        }
+        entityStore.close()
+
+
+        mapper.writeValue(out, colors)
+        return out.toString()
+    }
+
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces("application/json")
-    fun newDesign(entity: com.ipmus.entities.Entity) : String {
+    fun newDesign(entity: Design) : String {
         return newEntity(entity)
     }
 }

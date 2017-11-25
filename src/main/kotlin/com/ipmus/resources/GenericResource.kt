@@ -28,7 +28,7 @@ open class GenericResource<T>(private val resourceType: String, val factory : (E
     fun getSpecific(entityID: String) : String {
         val out = ByteArrayOutputStream()
         val mapper = jacksonObjectMapper()
-        val entity = readEntity(entityID)
+        val entity = readXodusEntityAndConvert(entityID)
         mapper.writeValue(out, entity)
 
         return out.toString()
@@ -44,13 +44,13 @@ open class GenericResource<T>(private val resourceType: String, val factory : (E
         }
         entityStore.close()
         val checkID = entityID ?: throw NotFoundException()
-        val rc = readEntity(checkID)
+        val rc = readXodusEntityAndConvert(checkID)
         mapper.writeValue(out, rc)
         return out.toString()
     }
 
 
-    private fun readEntity(entityID: String) : T {
+    protected fun readXodusEntityAndConvert(entityID: String) : T {
         val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
         val xodusEntityId = PersistentEntityId.toEntityId(entityID, entityStore)
         val readEntity = entityStore.computeInReadonlyTransaction { txn ->

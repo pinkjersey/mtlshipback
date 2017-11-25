@@ -22,7 +22,7 @@ class PurchaseOrderResource : GenericResource<PurchaseOrder>(PurchaseOrder.type,
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces("application/json")
-    fun newPO(entity: com.ipmus.entities.Entity) : String {
+    fun newPO(entity: PurchaseOrder) : String {
         return newEntity(entity)
     }
 }
