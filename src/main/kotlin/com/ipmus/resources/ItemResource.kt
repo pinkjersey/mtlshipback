@@ -15,43 +15,24 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 @Path("items")
-class ItemResource {
-    private val resourceType = Item.type
-
+class ItemResource : GenericResource<Item>(Item.type, ::Item) {
     @GET
     @Produces("application/json")
-    fun getAll(): String {
-        val out = ByteArrayOutputStream()
-        val mapper = jacksonObjectMapper()
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        val items: List<Item> = entityStore.computeInReadonlyTransaction { txn ->
-            txn.getAll(resourceType).map { Item(it) }
-        }
-        mapper.writeValue(out, items)
-        entityStore.close()
-        return out.toString()
+    fun getItems(): String {
+        return getAll()
     }
 
-    @POST
+    @Path("/{entityID}")
+    @GET
+    @Produces("application/json")
+    fun getItem(@PathParam("entityID") entityID: String): String {
+        return getSpecific(entityID)
+    }
+
+    @PUT
     @Consumes(MediaType.APPLICATION_JSON)
-    fun newItem(item: Item) : Response {
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        entityStore.executeInTransaction { txn ->
-            item.save(txn, entityStore)
-        }
-        entityStore.close()
-        return Response.status(200).build()
+    fun newItem(entity: Item) : String {
+        return newEntity(entity)
     }
 
-    @DELETE
-    fun deleteAll() : Response {
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        entityStore.executeInTransaction { txn ->
-            txn.getAll(resourceType).forEach {
-                it.delete()
-            }
-        }
-        entityStore.close()
-        return Response.status(200).build()
-    }
 }

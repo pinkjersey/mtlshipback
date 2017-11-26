@@ -17,62 +17,23 @@ import javax.ws.rs.core.Response
  * Created by mdozturk on 7/27/17.
  */
 @Path("shipments")
-class ShipmentResource {
+class ShipmentResource : GenericResource<Shipment>(Shipment.type, ::Shipment){
     @GET
     @Produces("application/json")
     fun shipments(): String {
-        val out = ByteArrayOutputStream()
-        val mapper = jacksonObjectMapper()
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        val shipment = entityStore.computeInReadonlyTransaction { txn ->
-            txn.getAll(Shipment.type).map { Shipment(it) }
-        }
-        mapper.writeValue(out, shipment)
-        entityStore.close()
-        return out.toString()
+        return getAll()
     }
 
     @Path("/{entityID}")
     @GET
     @Produces("application/json")
     fun getShipment(@PathParam("entityID") entityID: String) : String {
-        val out = ByteArrayOutputStream()
-        val mapper = jacksonObjectMapper()
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        val xodusEntityId = PersistentEntityId.toEntityId(entityID, entityStore)
-        val shipment = entityStore.computeInReadonlyTransaction { txn ->
-            try {
-                Shipment(txn.getEntity(xodusEntityId))
-            }
-            catch (e: EntityRemovedInDatabaseException) {
-                throw NotFoundException()
-            }
-        }
-        mapper.writeValue(out, shipment)
-        entityStore.close()
-        return out.toString()
+        return getSpecific(entityID)
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    fun newShipment(shipment: Shipment) : Response {
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        entityStore.executeInTransaction { txn ->
-            shipment.save(txn, entityStore)
-        }
-        entityStore.close()
-        return Response.status(200).build()
-    }
-
-    @DELETE
-    fun deleteAll() : Response {
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        entityStore.executeInTransaction { txn ->
-            txn.getAll(Shipment.type).forEach {
-                it.delete()
-            }
-        }
-        entityStore.close()
-        return Response.status(200).build()
+    fun newShipment(entity: Shipment) : String {
+        return newEntity(entity)
     }
 }

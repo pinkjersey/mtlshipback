@@ -17,53 +17,27 @@ import javax.ws.rs.core.Response
  * Created by mdozturk on 7/27/17.
  */
 @Path("containers")
-class ContainerResource {
+class ContainerResource : GenericResource<Container>(Container.type, ::Container) {
     @GET
     @Produces("application/json")
     fun containers(): String {
-        val out = ByteArrayOutputStream()
-        val mapper = jacksonObjectMapper()
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        val containers = entityStore.computeInReadonlyTransaction { txn ->
-            txn.getAll(Container.type).map { Container(it) }
-        }
-        mapper.writeValue(out, containers)
-        entityStore.close()
-        return out.toString()
+        return getAll()
     }
 
     @Path("/{entityID}")
     @GET
     @Produces("application/json")
     fun getContainer(@PathParam("entityID") entityID: String) : String {
-        val out = ByteArrayOutputStream()
-        val mapper = jacksonObjectMapper()
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        val xodusEntityId = PersistentEntityId.toEntityId(entityID, entityStore)
-        val container = entityStore.computeInReadonlyTransaction { txn ->
-            try {
-                Container(txn.getEntity(xodusEntityId))
-            }
-            catch (e: EntityRemovedInDatabaseException) {
-                throw NotFoundException()
-            }
-        }
-        mapper.writeValue(out, container)
-        entityStore.close()
-        return out.toString()
+        return getSpecific(entityID)
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    fun newContainer(container: Container) : Response {
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        entityStore.executeInTransaction { txn ->
-            container.save(txn, entityStore)
-        }
-        entityStore.close()
-        return Response.status(200).build()
+    fun newContainer(entity: Container) : String {
+        return newEntity(entity)
     }
 
+    /*
     @DELETE
     fun deleteAll() : Response {
         val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
@@ -75,4 +49,5 @@ class ContainerResource {
         entityStore.close()
         return Response.status(200).build()
     }
+    */
 }

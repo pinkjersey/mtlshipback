@@ -9,7 +9,8 @@ import jetbrains.exodus.entitystore.StoreTransaction
  * This entity represents shipment types.
  */
 
-data class Container(override val entityID: String, val containerName: String, val containerType: String, val items: List<String>) : com.ipmus.entities.Entity {
+data class Container(override val entityID: String, val containerName: String, val containerType: String,
+                     val items: List<String>) : com.ipmus.entities.Entity {
 
 
     constructor (entity: Entity) :

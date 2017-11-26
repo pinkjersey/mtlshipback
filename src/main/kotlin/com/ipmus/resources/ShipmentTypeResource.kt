@@ -17,50 +17,23 @@ import javax.ws.rs.core.Response
  * Created by mdozturk on 7/27/17.
  */
 @Path("shipmenttype")
-class ShipmentTypeResource {
+class ShipmentTypeResource : GenericResource<ShipmentType>(ShipmentType.type, ::ShipmentType) {
     @GET
     @Produces("application/json")
     fun shipmentTypes(): String {
-        val out = ByteArrayOutputStream()
-        val mapper = jacksonObjectMapper()
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        val shipmentTypes = entityStore.computeInReadonlyTransaction { txn ->
-            txn.getAll(ShipmentType.type).map { ShipmentType(it) }
-        }
-        mapper.writeValue(out, shipmentTypes)
-        entityStore.close()
-        return out.toString()
+        return getAll()
     }
 
     @Path("/{entityID}")
     @GET
     @Produces("application/json")
     fun getShipmentType(@PathParam("entityID") entityID: String) : String {
-        val out = ByteArrayOutputStream()
-        val mapper = jacksonObjectMapper()
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        val xodusEntityId = PersistentEntityId.toEntityId(entityID, entityStore)
-        val shipmentType = entityStore.computeInReadonlyTransaction { txn ->
-            try {
-                ShipmentType(txn.getEntity(xodusEntityId))
-            }
-            catch (e: EntityRemovedInDatabaseException) {
-                throw NotFoundException()
-            }
-        }
-        mapper.writeValue(out, shipmentType)
-        entityStore.close()
-        return out.toString()
+        return getSpecific(entityID)
     }
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    fun newShipmentType(shipmentType: ShipmentType) : Response {
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        entityStore.executeInTransaction { txn ->
-            shipmentType.save(txn, entityStore)
-        }
-        entityStore.close()
-        return Response.status(200).build()
+    fun newShipmentType(entity: ShipmentType) : String {
+        return newEntity(entity)
     }
 }

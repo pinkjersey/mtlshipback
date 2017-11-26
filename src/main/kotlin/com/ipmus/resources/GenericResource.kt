@@ -15,12 +15,10 @@ open class GenericResource<T>(private val resourceType: String, val factory : (E
     public fun getAll() : String {
         val out = ByteArrayOutputStream()
         val mapper = jacksonObjectMapper()
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
         val items: List<T> = entityStore.computeInReadonlyTransaction { txn ->
             txn.getAll(resourceType).map { factory(it) }
         }
         mapper.writeValue(out, items)
-        entityStore.close()
         return out.toString()
     }
 
@@ -30,28 +28,45 @@ open class GenericResource<T>(private val resourceType: String, val factory : (E
         val mapper = jacksonObjectMapper()
         val entity = readXodusEntityAndConvert(entityID)
         mapper.writeValue(out, entity)
-
         return out.toString()
     }
 
     fun newEntity(entity: com.ipmus.entities.Entity) : String {
         val out = ByteArrayOutputStream()
         val mapper = jacksonObjectMapper()
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
         var entityID: String? = null
         entityStore.executeInTransaction { txn ->
             entityID = entity.save(txn, entityStore)
         }
-        entityStore.close()
         val checkID = entityID ?: throw NotFoundException()
         val rc = readXodusEntityAndConvert(checkID)
         mapper.writeValue(out, rc)
         return out.toString()
     }
 
+    fun <ChildT> getChildren(entityID: String, propName: String, childFactory : (Entity) -> ChildT) : String {
+        val out = ByteArrayOutputStream()
+        val mapper = jacksonObjectMapper()
+        // we need to read the design entity from xodus, get the designColor entities
+        // and convert these to the local entity type
+        val es = entityStore
+        val xodusEntityId = PersistentEntityId.toEntityId(entityID, es)
+        val ret = es.computeInReadonlyTransaction { txn ->
+            try {
+                val entity = txn.getEntity(xodusEntityId)
+                entity.getLinks(propName).map {
+                    childFactory(it)
+                }
+            }
+            catch (e: EntityRemovedInDatabaseException) {
+                throw NotFoundException()
+            }
+        }
+        mapper.writeValue(out, ret)
+        return out.toString()
+    }
 
     protected fun readXodusEntityAndConvert(entityID: String) : T {
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
         val xodusEntityId = PersistentEntityId.toEntityId(entityID, entityStore)
         val readEntity = entityStore.computeInReadonlyTransaction { txn ->
             try {
@@ -62,7 +77,10 @@ open class GenericResource<T>(private val resourceType: String, val factory : (E
                 throw NotFoundException()
             }
         }
-        entityStore.close()
         return readEntity
+    }
+
+    companion object {
+        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
     }
 }

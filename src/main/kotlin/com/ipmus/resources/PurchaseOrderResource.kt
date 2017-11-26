@@ -1,5 +1,6 @@
 package com.ipmus.resources
 
+import com.ipmus.entities.Item
 import com.ipmus.entities.PurchaseOrder
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
@@ -17,6 +18,13 @@ class PurchaseOrderResource : GenericResource<PurchaseOrder>(PurchaseOrder.type,
     @Produces("application/json")
     fun purchaseOrder(@PathParam("entityID") entityID: String) : String {
         return getSpecific(entityID)
+    }
+
+    @Path("/{entityID}/items")
+    @GET
+    @Produces("application/json")
+    fun POItems(@PathParam("entityID") entityID: String) : String {
+        return getChildren<Item>(entityID, "items", ::Item)
     }
 
     @POST

@@ -9,14 +9,15 @@ import jetbrains.exodus.entitystore.Entity
  * entity using database data or is called directly when being constructed by jackson due to a REST API call.
  */
 
-data class Item(override val entityID: String, val cancelled: Boolean, val date: String, val poNum: String,
-                val vendorID: String, val designColorID: String, val shippedYards: Double, val FOB: Int, val LDP: Int,
+//{"entityID":"","cancelled":false,"poNum":"","vendorID":"4-0","designColorID":"3-2","orderedYards":500,"shippedYards":0,"FOB":0,"LDP":500,"customerPOID":"1-1","millETS":"1980-01-01".}
+data class Item(override val entityID: String, val cancelled: Boolean, val poNum: String,
+                val vendorID: String, val designColorID: String, val orderedYards: Double,
+                val shippedYards: Double, val fob: Int, val ldp: Int,
                 val customerPOID: String, val millETS: String) : com.ipmus.entities.Entity {
 
 
     init {
         // sanity check dates
-        LocalDate.parse(date)
         LocalDate.parse(millETS)
     }
 
@@ -26,51 +27,67 @@ data class Item(override val entityID: String, val cancelled: Boolean, val date:
     constructor (entity: Entity) :
             this(
                     entityID = entity.toIdString(),
-                    cancelled = entity.getProperty("cancelled") == "true",
-                    date = entity.getProperty("date") as String,
-                    poNum = entity.getProperty("poNum") as String,
-                    vendorID = entity.getLink("vendor")!!.toIdString(),
-                    designColorID = entity.getLink("designColor")!!.toIdString(),
-                    shippedYards = (entity.getProperty("shippedYards") as String).toDouble(),
-                    FOB = (entity.getProperty("FOB") as String).toInt(),
-                    LDP = (entity.getProperty("LDP") as String).toInt(),
-                    customerPOID = entity.getLink("customerPO")!!.toIdString(),
-                    millETS = entity.getProperty("millETS") as String
+                    cancelled = entity.getProperty(cancelledPropName) == "true",
+                    poNum = entity.getProperty(poNumPropName) as String,
+                    vendorID = entity.getLink(vendorPropName)!!.toIdString(),
+                    designColorID = entity.getLink(designColorPropName)!!.toIdString(),
+                    orderedYards = (entity.getProperty(orderedYardsPropName) as String).toDouble(),
+                    shippedYards = (entity.getProperty(shippedYardsPropName) as String).toDouble(),
+                    fob = (entity.getProperty(FOBPropName) as String).toInt(),
+                    ldp = (entity.getProperty(LDPPropName) as String).toInt(),
+                    customerPOID = entity.getLink(customerPOPropName)!!.toIdString(),
+                    millETS = entity.getProperty(millETSPropName) as String
             )
 
     /**
      * Saves the entity to the data store.
      */
     override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
+        // Create item
         val item = txn.newEntity(type);
         if (cancelled) {
-            item.setProperty("cancelled", "true");
+            item.setProperty(cancelledPropName, "true");
         } else {
-            item.setProperty("cancelled", "false");
+            item.setProperty(cancelledPropName, "false");
         }
-        item.setProperty("date", date)
-        item.setProperty("poNum", poNum)
-        item.setProperty("shippedYards", "%.2f".format(shippedYards))
-        item.setProperty("FOB", FOB.toString())
-        item.setProperty("LDP", LDP.toString())
-        item.setProperty("millETS", millETS.toString())
+        item.setProperty(poNumPropName, poNum)
+        item.setProperty(orderedYardsPropName, "%.2f".format(orderedYards))
+        item.setProperty(shippedYardsPropName, "%.2f".format(shippedYards))
+        item.setProperty(FOBPropName, fob.toString())
+        item.setProperty(LDPPropName, ldp.toString())
+        item.setProperty(millETSPropName, millETS.toString())
 
+        // add item to purchase order
         val customerPOEntityId = PersistentEntityId.toEntityId(customerPOID, store)
         val customerPOEntity = txn.getEntity(customerPOEntityId)
-        item.addLink("customerPO", customerPOEntity)
+        item.setLink(customerPOPropName, customerPOEntity)
+        customerPOEntity.addLink("items", item)
 
+        // add vendor to item
         val vendorEntityId = PersistentEntityId.toEntityId(vendorID, store)
         val vendorEntity = txn.getEntity(vendorEntityId)
-        item.addLink("vendor", vendorEntity)
+        item.setLink(vendorPropName, vendorEntity)
 
+        // add design color to item
         val designColorEntityId = PersistentEntityId.toEntityId(designColorID, store)
         val designColorEntity = txn.getEntity(designColorEntityId)
-        item.addLink("designColor", designColorEntity)
+        item.addLink(designColorPropName, designColorEntity)
 
         return item.toIdString()
     }
 
     companion object {
         val type = "Item"
+
+        val cancelledPropName = "cancelled"
+        val poNumPropName = "poNum"
+        val vendorPropName = "vendor"
+        val designColorPropName = "designColor"
+        val orderedYardsPropName = "orderedYards"
+        val shippedYardsPropName = "shippedYards"
+        val FOBPropName = "FOB"
+        val LDPPropName = "LDP"
+        val customerPOPropName = "customerPO"
+        val millETSPropName = "millETS"
     }
 }

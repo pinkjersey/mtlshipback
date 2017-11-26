@@ -40,9 +40,9 @@ class DesignResource : GenericResource<Design>(Design.type, ::Design) {
         val mapper = jacksonObjectMapper()
         // we need to read the design entity from xodus, get the designColor entities
         // and convert these to the local entity type
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
-        val xodusEntityId = PersistentEntityId.toEntityId(entityID, entityStore)
-        val colors = entityStore.computeInReadonlyTransaction { txn ->
+        val es = entityStore
+        val xodusEntityId = PersistentEntityId.toEntityId(entityID, es)
+        val colors = es.computeInReadonlyTransaction { txn ->
             try {
                 val entity = txn.getEntity(xodusEntityId)
                 entity.getLinks("colors").map {
@@ -53,9 +53,6 @@ class DesignResource : GenericResource<Design>(Design.type, ::Design) {
                 throw NotFoundException()
             }
         }
-        entityStore.close()
-
-
         mapper.writeValue(out, colors)
         return out.toString()
     }
