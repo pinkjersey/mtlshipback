@@ -35,4 +35,9 @@ class ItemResource : GenericResource<Item>(Item.type, ::Item) {
         return newEntity(entity)
     }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    fun updateItem(entity: Item) : String {
+        return updateEntity(entity)
+    }
 }

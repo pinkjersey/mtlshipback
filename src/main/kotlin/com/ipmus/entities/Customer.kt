@@ -13,10 +13,14 @@ data class Customer(override val entityID: String, val customerName: String) : c
     constructor (entity: Entity) :
             this(entityID = entity.toIdString(), customerName = entity.getProperty("customerName") as String)
 
-    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
+    override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
         val customer = txn.newEntity(type);
         customer.setProperty("customerName", customerName);
         return customer.toIdString()
+    }
+
+    override fun update(txn: StoreTransaction, store: PersistentEntityStoreImpl): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {

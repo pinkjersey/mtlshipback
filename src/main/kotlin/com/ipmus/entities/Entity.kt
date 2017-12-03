@@ -6,6 +6,7 @@ import jetbrains.exodus.entitystore.StoreTransaction
 interface Entity {
     val entityID: String
 
-    fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String
+    fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String
+    fun update(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String
 
 }

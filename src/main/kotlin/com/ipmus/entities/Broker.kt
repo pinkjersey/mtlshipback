@@ -12,10 +12,14 @@ data class Broker(override val entityID: String, val brokerName: String) : com.i
     constructor (entity: Entity) :
             this(entityID = entity.toIdString(), brokerName = entity.getProperty("brokerName") as String)
 
-    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String{
+    override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String{
         val broker = txn.newEntity(type);
         broker.setProperty("brokerName", brokerName);
         return broker.toIdString()
+    }
+
+    override fun update(txn: StoreTransaction, store: PersistentEntityStoreImpl): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {

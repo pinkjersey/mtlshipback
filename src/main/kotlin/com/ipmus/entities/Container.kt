@@ -23,7 +23,7 @@ data class Container(override val entityID: String, val containerName: String, v
                     }
             )
 
-    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
+    override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
         val newEntity = txn.newEntity(type);
         newEntity.setProperty("containerName", containerName);
         newEntity.setProperty("containerType", containerType);
@@ -36,6 +36,11 @@ data class Container(override val entityID: String, val containerName: String, v
 
         return newEntity.toIdString()
     }
+
+    override fun update(txn: StoreTransaction, store: PersistentEntityStoreImpl): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     companion object {
         val type = "Container"
     }

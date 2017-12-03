@@ -1,21 +1,14 @@
 package com.ipmus.entities
 
-import jetbrains.exodus.entitystore.*
 import jetbrains.exodus.entitystore.Entity
+import jetbrains.exodus.entitystore.PersistentEntityId
+import jetbrains.exodus.entitystore.PersistentEntityStoreImpl
+import jetbrains.exodus.entitystore.StoreTransaction
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import com.fasterxml.jackson.annotation.JsonFormat.Value.forPattern
 
-
-
-
-
-/**
- * @property date PO date in YYYYMMDD format
- */
-data class PurchaseOrder(override val entityID: String, val customerID: String,
-                         val customerPO: String, val date: String)
+class OurPurchaseOrder(override val entityID: String, val vendorID: String,
+                       val ourPO: String, val date: String)
     : com.ipmus.entities.Entity {
     init {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
@@ -26,20 +19,20 @@ data class PurchaseOrder(override val entityID: String, val customerID: String,
     constructor(entity: Entity) :
             this(
                     entityID = entity.toIdString(),
-                    customerID = entity.getLink("customer")!!.toIdString(),
-                    customerPO = entity.getProperty("customerPO") as String,
+                    vendorID = entity.getLink("vendor")!!.toIdString(),
+                    ourPO = entity.getProperty("ourPO") as String,
                     date = entity.getProperty("date") as String
             )
 
     override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl): String {
         val po = txn.newEntity(type)
-        po.setProperty("customerPO", customerPO)
+        po.setProperty("ourPO", ourPO)
         po.setProperty("date", date)
 
-        val customerEntityId = PersistentEntityId.toEntityId(customerID, store)
-        val customerEntity = txn.getEntity(customerEntityId)
-        customerEntity.addLink("purchaseOrders", po)
-        po.setLink("customer", customerEntity)
+        val vendorEntityId = PersistentEntityId.toEntityId(vendorID, store)
+        val vendorEntity = txn.getEntity(vendorEntityId)
+        vendorEntity.addLink("ourPurchaseOrders", po)
+        po.setLink("vendor", vendorEntity)
         return po.toIdString()
     }
 
@@ -48,7 +41,6 @@ data class PurchaseOrder(override val entityID: String, val customerID: String,
     }
 
     companion object {
-        val type = "PurchaseOrder"
+        val type = "OurPurchaseOrder"
     }
-
 }

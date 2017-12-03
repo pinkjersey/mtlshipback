@@ -18,7 +18,7 @@ data class DesignColor(override val entityID: String, val designID: String, val 
                     color = entity.getProperty("color") as String
             )
 
-    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
+    override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
         val designColor = txn.newEntity(type);
         designColor.setProperty("color", color);
 
@@ -28,6 +28,10 @@ data class DesignColor(override val entityID: String, val designID: String, val 
         // design colors can only have one design, to enforce this, the setLink API is used
         designColor.setLink("design", designEntity)
         return designColor.toIdString()
+    }
+
+    override fun update(txn: StoreTransaction, store: PersistentEntityStoreImpl): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {

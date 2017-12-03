@@ -36,26 +36,8 @@ class CustomerResource : GenericResource<Customer>(Customer.type, ::Customer)  {
     @Path("/{entityID}/purchaseOrders")
     @GET
     @Produces("application/json")
-    fun designColors(@PathParam("entityID") entityID: String) : String {
-        val out = ByteArrayOutputStream()
-        val mapper = jacksonObjectMapper()
-        // we need to read the design entity from xodus, get the purchaseOrders entities
-        // and convert these to the local entity type
-        val entityStore = entityStore
-        val xodusEntityId = PersistentEntityId.toEntityId(entityID, entityStore)
-        val colors = entityStore.computeInReadonlyTransaction { txn ->
-            try {
-                val entity = txn.getEntity(xodusEntityId)
-                entity.getLinks("purchaseOrders").map {
-                    PurchaseOrder(it)
-                }
-            }
-            catch (e: EntityRemovedInDatabaseException) {
-                throw NotFoundException()
-            }
-        }
-        mapper.writeValue(out, colors)
-        return out.toString()
+    fun purchaseOrders(@PathParam("entityID") entityID: String) : String {
+        return getChildren<PurchaseOrder>(entityID, "purchaseOrders", ::PurchaseOrder)
     }
 
     @POST

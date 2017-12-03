@@ -36,7 +36,20 @@ open class GenericResource<T>(private val resourceType: String, val factory : (E
         val mapper = jacksonObjectMapper()
         var entityID: String? = null
         entityStore.executeInTransaction { txn ->
-            entityID = entity.save(txn, entityStore)
+            entityID = entity.create(txn, entityStore)
+        }
+        val checkID = entityID ?: throw NotFoundException()
+        val rc = readXodusEntityAndConvert(checkID)
+        mapper.writeValue(out, rc)
+        return out.toString()
+    }
+
+    fun updateEntity(entity: com.ipmus.entities.Entity) : String {
+        val out = ByteArrayOutputStream()
+        val mapper = jacksonObjectMapper()
+        var entityID: String? = null
+        entityStore.executeInTransaction { txn ->
+            entityID = entity.update(txn, entityStore)
         }
         val checkID = entityID ?: throw NotFoundException()
         val rc = readXodusEntityAndConvert(checkID)

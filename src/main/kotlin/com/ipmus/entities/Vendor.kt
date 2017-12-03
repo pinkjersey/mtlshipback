@@ -12,10 +12,14 @@ data class Vendor(override val entityID: String, val vendorName: String) : com.i
     constructor (entity: Entity) :
             this(entityID = entity.toIdString(), vendorName = entity.getProperty("vendorName") as String)
 
-    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
+    override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
         val vendor = txn.newEntity(type)
         vendor.setProperty("vendorName", vendorName)
         return vendor.toIdString()
+    }
+
+    override fun update(txn: StoreTransaction, store: PersistentEntityStoreImpl): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {

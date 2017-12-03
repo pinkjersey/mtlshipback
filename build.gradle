@@ -9,7 +9,7 @@ apply plugin: 'com.google.cloud.tools.appengine'
 sourceCompatibility = 1.8
 
 buildscript {
-    ext.kotlin_version = '1.1.50'      // Configuration for building
+    ext.kotlin_version = '1.1.61'      // Configuration for building
     ext.xodus_version = '1.0.6'
     ext.jersey_version = '2.7'
 

@@ -37,7 +37,7 @@ data class Shipment(override val entityID: String, val shipmentTypeID: String,
     /**
      * Saves the entity to the data store.
      */
-    override fun save(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
+    override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
         val shipment = txn.newEntity(type);
         shipment.setProperty("status", status.toString())
         shipment.setProperty("ETA", ETA)
@@ -59,6 +59,10 @@ data class Shipment(override val entityID: String, val shipmentTypeID: String,
         shipment.addLink("container", containerEntity)
 
         return shipment.toIdString()
+    }
+
+    override fun update(txn: StoreTransaction, store: PersistentEntityStoreImpl): String {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     enum class ShipmentStatus { S, D }

@@ -15,7 +15,8 @@ import javax.ws.rs.ext.ContextResolver
 class JerseyApp : ResourceConfig(setOf(ItemResource::class.java, CustomerResource::class.java,
         BrokerResource::class.java, VesselResource::class.java, VendorResource::class.java,
         DesignResource::class.java, DesignColorResource::class.java, ShipmentTypeResource::class.java,
-        ShipmentResource::class.java, ContainerResource::class.java, PurchaseOrderResource::class.java)) {
+        ShipmentResource::class.java, ContainerResource::class.java, PurchaseOrderResource::class.java,
+        OurPurchaseOrderResource::class.java)) {
     init {
         register(CORSResponseFilter::class.java)
         register(ContextResolver<ObjectMapper> { ObjectMapper().registerModule(KotlinModule()) })
