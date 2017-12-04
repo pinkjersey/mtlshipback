@@ -37,7 +37,10 @@ class OurPurchaseOrder(override val entityID: String, val vendorID: String,
     }
 
     override fun update(txn: StoreTransaction, store: PersistentEntityStoreImpl): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val entityID = PersistentEntityId.toEntityId(this.entityID, store)
+        val ourPOXodusEntity = txn.getEntity(entityID)
+        ourPOXodusEntity.setProperty("date", date) // only the date is updatable
+        return ourPOXodusEntity.toIdString()
     }
 
     companion object {
