@@ -29,6 +29,12 @@ class OurPurchaseOrderResource : GenericResource<OurPurchaseOrder>(OurPurchaseOr
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    fun updatePO(entity: OurPurchaseOrder) : String {
+        return updateEntity(entity)
+    }
+
+    @PUT
+    @Consumes(MediaType.APPLICATION_JSON)
     @Produces("application/json")
     fun newPO(entity: OurPurchaseOrder) : String {
         return newEntity(entity)
