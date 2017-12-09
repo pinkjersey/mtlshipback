@@ -9,9 +9,10 @@ apply plugin: 'com.google.cloud.tools.appengine'
 sourceCompatibility = 1.8
 
 buildscript {
-    ext.kotlin_version = '1.1.61'      // Configuration for building
+    ext.kotlin_version = '1.2.0'      // Configuration for building
     ext.xodus_version = '1.0.6'
     ext.jersey_version = '2.7'
+    ext.slf4j_version = '1.7.5'
 
     repositories {
         jcenter()      // Bintray's repository - a fast Maven Central mirror & more
@@ -44,7 +45,9 @@ dependencies {
     providedCompile 'com.google.appengine:appengine:+'
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    //compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile "org.slf4j:slf4j-api:$slf4j_version"
+    compile "org.slf4j:slf4j-log4j12:$slf4j_version"
 }
 
 gretty {
