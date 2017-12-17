@@ -10,7 +10,7 @@ import jetbrains.exodus.entitystore.Entity
  */
 
 //{"entityID":"","cancelled":false,"poNum":"","vendorID":"4-0","designColorID":"3-2","orderedYards":500,"shippedYards":0,"FOB":0,"LDP":500,"customerPOID":"1-1","millETS":"1980-01-01".}
-data class Item(override val entityID: String, val cancelled: Boolean, val ourPOID: String?,
+data class Item(override val entityID: String, val cancelled: Boolean, val ourPOID: String?, val vendorInvoiceID: String?,
                 val vendorID: String, val designColorID: String, val orderedYards: Double,
                 val shippedYards: Double, val fob: Int, val ldp: Int,
                 val customerPOID: String, val millETS: String) : com.ipmus.entities.Entity {
@@ -29,6 +29,7 @@ data class Item(override val entityID: String, val cancelled: Boolean, val ourPO
                     entityID = entity.toIdString(),
                     cancelled = entity.getProperty(cancelledPropName) == "true",
                     ourPOID = entity.getLink(ourPOPropName)?.toIdString(),
+                    vendorInvoiceID = entity.getLink(vendorInvoiceIDPropName)?.toIdString(),
                     vendorID = entity.getLink(vendorPropName)!!.toIdString(),
                     designColorID = entity.getLink(designColorPropName)!!.toIdString(),
                     orderedYards = (entity.getProperty(orderedYardsPropName) as String).toDouble(),
@@ -47,7 +48,7 @@ data class Item(override val entityID: String, val cancelled: Boolean, val ourPO
      */
     override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
         // Create item
-        val item = txn.newEntity(type);
+        val item = txn.newEntity(type)
         updateEntityProps(item)
 
         // add item to purchase order
@@ -86,6 +87,24 @@ data class Item(override val entityID: String, val cancelled: Boolean, val ourPO
                 val vendorEntityId = PersistentEntityId.toEntityId(vendorID, store)
                 val vendorEntity = txn.getEntity(vendorEntityId)
                 vendorEntity.deleteLink("unassignedItems", item)
+
+                // add item to vendorInvoiceItems, for later use in vendor invoices
+                vendorEntity.addLink("vendorInvoiceItems", item)
+            }
+        }
+        if (vendorInvoiceID != null) {
+            val vendorInvoice = item.getLink(vendorInvoiceIDPropName)
+            if (vendorInvoice == null) {
+                // item assigned to vendor invoice
+                val vendorInvoiceEntityID = PersistentEntityId.toEntityId(vendorInvoiceID, store)
+                val vendorInvoiceEntity = txn.getEntity(vendorInvoiceEntityID)
+                item.setLink(vendorInvoiceIDPropName, vendorInvoiceEntity)
+                vendorInvoiceEntity.addLink("items", item)
+
+                // remove item from vendor invoice items
+                val vendorEntityId = PersistentEntityId.toEntityId(vendorID, store)
+                val vendorEntity = txn.getEntity(vendorEntityId)
+                vendorEntity.deleteLink("vendorInvoiceItems", item)
             }
         }
         updateEntityProps(item)
@@ -110,6 +129,7 @@ data class Item(override val entityID: String, val cancelled: Boolean, val ourPO
 
         val cancelledPropName = "cancelled"
         val ourPOPropName = "ourPO"
+        val vendorInvoiceIDPropName = "vendorInvoiceID"
         val vendorPropName = "vendor"
         val designColorPropName = "designColor"
         val orderedYardsPropName = "orderedYards"

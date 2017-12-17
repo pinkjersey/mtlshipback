@@ -9,10 +9,11 @@ apply plugin: 'com.google.cloud.tools.appengine'
 sourceCompatibility = 1.8
 
 buildscript {
-    ext.kotlin_version = '1.2.0'      // Configuration for building
-    ext.xodus_version = '1.0.6'
-    ext.jersey_version = '2.7'
+    ext.kotlin_version = '1.2.10'      // Configuration for building
+    ext.xodus_version = '1.1.0'
+    ext.jersey_version = '2.17'
     ext.slf4j_version = '1.7.5'
+    ext.jackson_version = '2.9.2'
 
     repositories {
         jcenter()      // Bintray's repository - a fast Maven Central mirror & more
@@ -37,15 +38,15 @@ repositories {
 dependencies {
     compile "org.glassfish.jersey.containers:jersey-container-servlet-core:$jersey_version"
     compile "org.glassfish.jersey.media:jersey-media-json-jackson:$jersey_version"
-    compile "com.fasterxml.jackson.module:jackson-module-kotlin:2.8.7"
-    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.8.7"
+    compile "com.fasterxml.jackson.module:jackson-module-kotlin:$jackson_version"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jackson_version"
     compile "org.jetbrains.xodus:xodus-openAPI:$xodus_version"
     compile "org.jetbrains.xodus:xodus-entity-store:$xodus_version"
     providedCompile 'javax.servlet:javax.servlet-api:3.1.0'
     providedCompile 'com.google.appengine:appengine:+'
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    //compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile "org.slf4j:slf4j-api:$slf4j_version"
     compile "org.slf4j:slf4j-log4j12:$slf4j_version"
 }

@@ -5,6 +5,7 @@ import com.ipmus.Configuration
 import com.ipmus.entities.OurPurchaseOrder
 import com.ipmus.entities.Vendor
 import com.ipmus.entities.Item
+import com.ipmus.entities.VendorInvoice
 import jetbrains.exodus.entitystore.EntityRemovedInDatabaseException
 import jetbrains.exodus.entitystore.PersistentEntityId
 import jetbrains.exodus.entitystore.PersistentEntityStores
@@ -45,6 +46,20 @@ class VendorResource : GenericResource<Vendor>(Vendor.type, ::Vendor) {
     @Produces("application/json")
     fun getVendorUnassignedItems(@PathParam("entityID") entityID: String) : String {
         return getChildren<Item>(entityID, "unassignedItems", ::Item)
+    }
+
+    @Path("/{entityID}/vendorInvoiceItems")
+    @GET
+    @Produces("application/json")
+    fun vendorInvoiceItems(@PathParam("entityID") entityID: String) : String {
+        return getChildren<Item>(entityID, "vendorInvoiceItems", ::Item)
+    }
+
+    @Path("/{entityID}/vendorInvoices")
+    @GET
+    @Produces("application/json")
+    fun getVendorInvoices(@PathParam("entityID") entityID: String) : String {
+        return getChildren<VendorInvoice>(entityID, "invoices", ::VendorInvoice)
     }
 
     @POST

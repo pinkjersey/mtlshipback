@@ -41,11 +41,28 @@ The process being implemented:
 
 ### 3 Update The Ex-Mill Date
 
-**TO DO**
-* Finish the ex-mill (orange color) functionality
-* Edit item
+* Reports missing ex-date in orange
+* Edit item added
 
-### Add Functionality To Add A Vendor Invoice
+**TO DO**
+
+* Check to make sure ex-mill date > invoice date in both the front end and back end
+
+### 4 Add Functionality To Add A Vendor Invoice
+
+Major work done
+
+**To Do**
+
+### 5 Shipping Data Creation
+
+**To Do**
+
+### 6 Our Invoice Creation
+
+**To Do**
+
+### 7 Reports
 
 **To Do**
 

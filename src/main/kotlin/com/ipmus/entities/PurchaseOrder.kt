@@ -7,10 +7,6 @@ import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import com.fasterxml.jackson.annotation.JsonFormat.Value.forPattern
 
-
-
-
-
 /**
  * @property date PO date in YYYYMMDD format
  */
