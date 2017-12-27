@@ -11,13 +11,13 @@ import jetbrains.exodus.entitystore.Entity
 
 
 data class Shipment(override val entityID: String, val shipmentTypeID: String,
-                    val ETA: String, val vesselID: String, val brokerID: String, val containerID: String,
+                    val eta: String, val vesselID: String, val brokerID: String,
                     val status: ShipmentStatus) : com.ipmus.entities.Entity {
 
 
     init {
         // sanity check dates
-        LocalDate.parse(ETA)
+        LocalDate.parse(eta)
     }
 
     /**
@@ -27,10 +27,9 @@ data class Shipment(override val entityID: String, val shipmentTypeID: String,
             this(
                     entityID = entity.toIdString(),
                     shipmentTypeID = entity.getLink("shipmentType")!!.toIdString(),
-                    ETA = entity.getProperty("ETA") as String,
+                    eta = entity.getProperty("eta") as String,
                     vesselID = entity.getLink("vessel")!!.toIdString(),
                     brokerID = entity.getLink("broker")!!.toIdString(),
-                    containerID = entity.getLink("container")!!.toIdString(),
                     status = ShipmentStatus.valueOf(entity.getProperty("status") as String)
             )
 
@@ -40,7 +39,7 @@ data class Shipment(override val entityID: String, val shipmentTypeID: String,
     override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
         val shipment = txn.newEntity(type);
         shipment.setProperty("status", status.toString())
-        shipment.setProperty("ETA", ETA)
+        shipment.setProperty("eta", eta)
 
         val shipmentTypeEntityId = PersistentEntityId.toEntityId(shipmentTypeID, store)
         val shipmentTypeEntity = txn.getEntity(shipmentTypeEntityId)
@@ -54,10 +53,6 @@ data class Shipment(override val entityID: String, val shipmentTypeID: String,
         val brokerEntity = txn.getEntity(brokerEntityId)
         shipment.addLink("broker", brokerEntity)
 
-        val containerEntityId = PersistentEntityId.toEntityId(containerID, store)
-        val containerEntity = txn.getEntity(containerEntityId)
-        shipment.addLink("container", containerEntity)
-
         return shipment.toIdString()
     }
 
@@ -65,7 +60,7 @@ data class Shipment(override val entityID: String, val shipmentTypeID: String,
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    enum class ShipmentStatus { S, D }
+    enum class ShipmentStatus { S, D, C }
 
     companion object {
         val type = "Shipment"

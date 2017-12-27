@@ -36,25 +36,7 @@ class DesignResource : GenericResource<Design>(Design.type, ::Design) {
     @GET
     @Produces("application/json")
     fun designColors(@PathParam("entityID") entityID: String) : String {
-        val out = ByteArrayOutputStream()
-        val mapper = jacksonObjectMapper()
-        // we need to read the design entity from xodus, get the designColor entities
-        // and convert these to the local entity type
-        val es = entityStore
-        val xodusEntityId = PersistentEntityId.toEntityId(entityID, es)
-        val colors = es.computeInReadonlyTransaction { txn ->
-            try {
-                val entity = txn.getEntity(xodusEntityId)
-                entity.getLinks("colors").map {
-                    DesignColor(it)
-                }
-            }
-            catch (e: EntityRemovedInDatabaseException) {
-                throw NotFoundException()
-            }
-        }
-        mapper.writeValue(out, colors)
-        return out.toString()
+        return getChildren<DesignColor>(entityID, "colors", ::DesignColor)
     }
 
     @POST

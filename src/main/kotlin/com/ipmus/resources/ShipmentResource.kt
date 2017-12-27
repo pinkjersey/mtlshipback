@@ -2,6 +2,7 @@ package com.ipmus.resources
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.ipmus.Configuration
+import com.ipmus.entities.Container
 import com.ipmus.entities.Shipment
 import jetbrains.exodus.entitystore.EntityRemovedInDatabaseException
 import jetbrains.exodus.entitystore.PersistentEntityId
@@ -29,6 +30,13 @@ class ShipmentResource : GenericResource<Shipment>(Shipment.type, ::Shipment){
     @Produces("application/json")
     fun getShipment(@PathParam("entityID") entityID: String) : String {
         return getSpecific(entityID)
+    }
+
+    @Path("/{entityID}/containers")
+    @GET
+    @Produces("application/json")
+    fun containers(@PathParam("entityID") entityID: String) : String {
+        return getChildren<Container>(entityID, "containers", ::Container)
     }
 
     @POST
