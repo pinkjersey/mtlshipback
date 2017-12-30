@@ -6,6 +6,20 @@ The process being implemented:
 
 ![alt text](https://www.websequencediagrams.com/cgi-bin/cdraw?lz=dGl0bGUgTVRMIE9yZGVyIFByb2Nlc3MKCkN1c3RvbWVyLT4rTVRMOiAACAggUHVyY2hhc2UAKgcoMSkKTVRMLT4rVmVuZG9yOiBPdQATEjIpCgAZBi0tPgBKBUV4LW1pbGwgZGF0ZSAoMwAWCT4tAGkFAEYGIGludm9pY2UgKDQAXgdGb3J3YXJkZXI6IFJlc2VydmUgY29udGFpbmVyICg1AIEEBy0AgTUIOiBJADoINikKCg&s=patent)
 
+## Compiling
+
+### Deploying
+
+    gradle appengineDeploy
+
+### Deploying to Heroku
+
+    git push heroku master
+    
+### Cleaning up database
+
+    
+    
 ## Status
 
 ### 1 Customer Purchase Order Creation
