@@ -24,3 +24,6 @@ gradle-app.setting
 
 # Cache of project
 .gradletasknamecache
+
+# Utility scripts
+copytoserver.bat
