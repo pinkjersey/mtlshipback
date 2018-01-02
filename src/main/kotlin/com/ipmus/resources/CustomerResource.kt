@@ -1,18 +1,11 @@
 package com.ipmus.resources
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ipmus.Configuration
 import com.ipmus.entities.Customer
 import com.ipmus.entities.PurchaseOrder
-import com.ipmus.resources.GenericResource.Companion.entityStore
-import jetbrains.exodus.entitystore.EntityRemovedInDatabaseException
-import jetbrains.exodus.entitystore.PersistentEntityId
-import jetbrains.exodus.entitystore.PersistentEntityStores
-import java.io.ByteArrayOutputStream
+import com.ipmus.filter.TokenNeeded
 import javax.ws.rs.*
 import javax.ws.rs.POST
 import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
 
 
 /**
@@ -22,6 +15,7 @@ import javax.ws.rs.core.Response
 class CustomerResource : GenericResource<Customer>(Customer.type, ::Customer)  {
     @GET
     @Produces("application/json")
+    @TokenNeeded
     fun customers(): String {
         return getAll()
     }

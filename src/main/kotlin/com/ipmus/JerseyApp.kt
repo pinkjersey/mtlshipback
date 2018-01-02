@@ -6,10 +6,13 @@ package com.ipmus
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.ipmus.filter.AuthFilter
+import com.ipmus.filter.CORSResponseFilter
 import com.ipmus.resources.*
+import com.ipmus.util.DigestPassword
 import org.glassfish.jersey.server.ResourceConfig
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.io.File
 import javax.ws.rs.ApplicationPath
 import javax.ws.rs.ext.ContextResolver
 
@@ -18,14 +21,55 @@ class JerseyApp : ResourceConfig(setOf(ItemResource::class.java, CustomerResourc
         BrokerResource::class.java, VesselResource::class.java, VendorResource::class.java,
         DesignResource::class.java, DesignColorResource::class.java, ShipmentTypeResource::class.java,
         ShipmentResource::class.java, ContainerResource::class.java, PurchaseOrderResource::class.java,
-        OurPurchaseOrderResource::class.java, VendorInvoiceResource::class.java)) {
+        OurPurchaseOrderResource::class.java, VendorInvoiceResource::class.java, LoginResource::class.java)) {
     private val logger = LoggerFactory.getLogger(JerseyApp::class.java)
 
     init {
-        val opsys = System.getProperty("os.name").toLowerCase();
-        logger.info("JerseyApp init ${opsys}")
+        register(AuthFilter::class.java)
         register(CORSResponseFilter::class.java)
         register(ContextResolver<ObjectMapper> { ObjectMapper().registerModule(KotlinModule()) })
+        val opsys = System.getProperty("os.name").toLowerCase();
+        logger.info("JerseyApp init ${opsys}")
+        val userFile = if (opsys.contains("windows")) {
+            "c:/temp/users.txt"
+        } else {
+            "/home/ubuntu/users.txt"
+        }
+        initUsers(userFile)
     }
 
+    private fun initUsers(filename: String) {
+        val userType = "User"
+        val es = GenericResource.entityStore
+        val done = es.computeInReadonlyTransaction { txn ->
+            val loadedUsers = txn.getAll(userType)
+            if (!loadedUsers.isEmpty) {
+                logger.info("Users exist. Doing nothing")
+                true
+            } else {
+                false
+            }
+        }
+
+        if (done) {
+            return
+        }
+
+        logger.info("Users not initialized, initializing")
+        val users = File(filename).readLines()
+        users.forEach {
+            val tokens = it.split(" ")
+            if (tokens.size == 2) {
+                logger.info("Adding user ${tokens[0]}")
+                es.executeInTransaction { txn ->
+                    val broker = txn.newEntity(userType);
+                    broker.setProperty("email", tokens[0]);
+                    broker.setProperty("pass", DigestPassword.doWork(tokens[1]));
+                }
+            }
+        }
+
+
+
+    }
 }
