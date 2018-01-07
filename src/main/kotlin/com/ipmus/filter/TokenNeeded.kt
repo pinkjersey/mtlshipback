@@ -8,6 +8,6 @@ import java.lang.annotation.ElementType.TYPE
 import java.lang.annotation.RetentionPolicy.RUNTIME
 
 @NameBinding
-@Retention(RUNTIME)
+@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FILE, AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
 annotation class TokenNeeded

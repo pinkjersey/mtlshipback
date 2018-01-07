@@ -58,13 +58,14 @@ class JerseyApp : ResourceConfig(setOf(ItemResource::class.java, CustomerResourc
         logger.info("Users not initialized, initializing")
         val users = File(filename).readLines()
         users.forEach {
-            val tokens = it.split(" ")
-            if (tokens.size == 2) {
-                logger.info("Adding user ${tokens[0]}")
+            val tokens = it.split("\t")
+            if (tokens.size == 3) {
+                logger.info("Adding user ${tokens[1]}")
                 es.executeInTransaction { txn ->
-                    val broker = txn.newEntity(userType);
-                    broker.setProperty("email", tokens[0]);
-                    broker.setProperty("pass", DigestPassword.doWork(tokens[1]));
+                    val user = txn.newEntity(userType);
+                    user.setProperty("email", tokens[0]);
+                    user.setProperty("name", tokens[1]);
+                    user.setProperty("pass", DigestPassword.doWork(tokens[2]));
                 }
             }
         }

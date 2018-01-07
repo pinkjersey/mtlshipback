@@ -12,6 +12,7 @@ import java.time.LocalDateTime
 import java.util.Date
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import jetbrains.exodus.entitystore.EntityRemovedInDatabaseException
 import org.slf4j.LoggerFactory
 import java.time.ZoneId
 
@@ -28,37 +29,41 @@ class LoginResource {
     @Consumes(MediaType.APPLICATION_JSON)
     fun login(cred: Credentials) : Response {
         try {
-            authenticate(cred)
-
+            val userWithoutToken = authenticate(cred)
             val token = issueToken(cred.email)
+            val user = userWithoutToken.copy(token = token)
 
             // if we get here, then the user is authenticated
             val out = ByteArrayOutputStream()
             val mapper = jacksonObjectMapper()
-            val u = User(email = cred.email, fullName = "Bobcat Questionmark", token = token)
-            mapper.writeValue(out, u)
+            mapper.writeValue(out, user)
             return Response.status(200).header(AUTHORIZATION, "Bearer " + token).entity(out.toString()).build();
         }
-        catch (_: Exception) {
+        catch (e: Exception) {
+            logger.error("An exception occurred while logging in: ${e.message}")
+            e.printStackTrace()
             throw NotAuthorizedException("Issue logging in")
         }
     }
 
-    private fun authenticate(cred: Credentials) {
+    private fun authenticate(cred: Credentials): User {
         logger.info("Authenticating ${cred.email}")
         val es = GenericResource.entityStore
         val digest = DigestPassword.doWork(cred.pass)
-        es.executeInReadonlyTransaction { txn ->  
+        return es.computeInReadonlyTransaction { txn ->
             val candidates = txn.find("User", "email", cred.email);
             val matching = candidates.filter {
-                logger.info("Found candidate")
+                logger.debug("Found candidate")
                 it.getProperty("pass") == digest
             }
             if (matching.size != 1) {
-                throw NotAuthorizedException("Loging failure ${matching.size}")
+                throw NotAuthorizedException("Logging failure ${matching.size}")
             }
+            val match = matching.first()
+            val email = match.getProperty("email") as String
+            val name = match.getProperty("name") as String
+            User(email = email, fullName = name, token = "BOGUS")
         }
-
     }
 
     private fun issueToken(email: String): String {
@@ -70,7 +75,7 @@ class LoginResource {
                 .setExpiration(toDate(LocalDateTime.now().plusMinutes(15L)))
                 .signWith(SignatureAlgorithm.HS512, key)
                 .compact()
-        logger.info("#### generating token for a key : $jwtToken - $key")
+        logger.debug("#### generating token for a key : $jwtToken - $key")
         return jwtToken
     }
 

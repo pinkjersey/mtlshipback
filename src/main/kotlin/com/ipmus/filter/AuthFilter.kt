@@ -35,7 +35,7 @@ class AuthFilter() : ContainerRequestFilter {
                 try {
                     val key = MTLKeyGenerator.generateKey()
                     Jwts.parser().setSigningKey(key).parseClaimsJws(token);
-                    logger.info("#### valid token : " + token);
+                    logger.debug("#### valid token : " + token);
                 }
                 catch (e: Exception) {
                     logger.error("#### invalid token : " + token);

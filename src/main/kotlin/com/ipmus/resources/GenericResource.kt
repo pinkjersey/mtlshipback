@@ -1,18 +1,14 @@
 package com.ipmus.resources
 
 import com.ipmus.Configuration
-import jetbrains.exodus.entitystore.EntityRemovedInDatabaseException
-import jetbrains.exodus.entitystore.PersistentEntityId
-import jetbrains.exodus.entitystore.PersistentEntityStores
 import java.io.ByteArrayOutputStream
 import javax.ws.rs.*
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import jetbrains.exodus.entitystore.Entity
+import jetbrains.exodus.entitystore.*
 
+open class GenericResource<out T>(private val resourceType: String, private val factory : (Entity) -> T) {
 
-open class GenericResource<T>(private val resourceType: String, val factory : (Entity) -> T) {
-
-    public fun getAll() : String {
+    fun getAll() : String {
         val out = ByteArrayOutputStream()
         val mapper = jacksonObjectMapper()
         val items: List<T> = entityStore.computeInReadonlyTransaction { txn ->
@@ -79,9 +75,9 @@ open class GenericResource<T>(private val resourceType: String, val factory : (E
         return out.toString()
     }
 
-    protected fun readXodusEntityAndConvert(entityID: String) : T {
+    private fun readXodusEntityAndConvert(entityID: String) : T {
         val xodusEntityId = PersistentEntityId.toEntityId(entityID, entityStore)
-        val readEntity = entityStore.computeInReadonlyTransaction { txn ->
+        return entityStore.computeInReadonlyTransaction { txn ->
             try {
                 val entity = txn.getEntity(xodusEntityId)
                 factory(entity)
@@ -90,10 +86,9 @@ open class GenericResource<T>(private val resourceType: String, val factory : (E
                 throw NotFoundException()
             }
         }
-        return readEntity
     }
 
     companion object {
-        val entityStore = PersistentEntityStores.newInstance(Configuration.dataLocation)
+        val entityStore: PersistentEntityStoreImpl = PersistentEntityStores.newInstance(Configuration.dataLocation)
     }
 }

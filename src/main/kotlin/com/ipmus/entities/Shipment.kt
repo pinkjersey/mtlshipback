@@ -57,7 +57,27 @@ data class Shipment(override val entityID: String, val shipmentTypeID: String,
     }
 
     override fun update(txn: StoreTransaction, store: PersistentEntityStoreImpl): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val entityID = PersistentEntityId.toEntityId(this.entityID, store)
+        val shipment = txn.getEntity(entityID)
+        shipment.setProperty("status", status.toString())
+        shipment.setProperty("eta", eta)
+        shipment.deleteLinks("shipmentType")
+        shipment.deleteLinks("vessel")
+        shipment.deleteLinks("broker")
+
+        val shipmentTypeEntityId = PersistentEntityId.toEntityId(shipmentTypeID, store)
+        val shipmentTypeEntity = txn.getEntity(shipmentTypeEntityId)
+        shipment.addLink("shipmentType", shipmentTypeEntity)
+
+        val vesselEntityId = PersistentEntityId.toEntityId(vesselID, store)
+        val vesselEntity = txn.getEntity(vesselEntityId)
+        shipment.addLink("vessel", vesselEntity)
+
+        val brokerEntityId = PersistentEntityId.toEntityId(brokerID, store)
+        val brokerEntity = txn.getEntity(brokerEntityId)
+        shipment.addLink("broker", brokerEntity)
+
+        return shipment.toIdString()
     }
 
     enum class ShipmentStatus { S, D, C }

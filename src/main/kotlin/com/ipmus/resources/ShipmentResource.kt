@@ -39,9 +39,16 @@ class ShipmentResource : GenericResource<Shipment>(Shipment.type, ::Shipment){
         return getChildren<Container>(entityID, "containers", ::Container)
     }
 
-    @POST
+    @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     fun newShipment(entity: Shipment) : String {
         return newEntity(entity)
     }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    fun updateShipment(entity: Shipment) : String {
+        return updateEntity(entity)
+    }
+
 }
