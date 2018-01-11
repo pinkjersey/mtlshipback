@@ -31,7 +31,7 @@ class ContainerResource : GenericResource<Container>(Container.type, ::Container
         return getSpecific(entityID)
     }
 
-    @POST
+    @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     fun newContainer(entity: Container) : String {
         return newEntity(entity)

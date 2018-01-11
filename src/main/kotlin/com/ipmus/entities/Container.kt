@@ -9,32 +9,29 @@ import jetbrains.exodus.entitystore.StoreTransaction
  * This entity represents shipment types.
  */
 
-data class Container(override val entityID: String, val containerName: String, val containerType: String,
-                     val items: List<String>) : com.ipmus.entities.Entity {
+data class Container(override val entityID: String, val shipmentID: String, val containerName: String, val containerType: String)
+    : com.ipmus.entities.Entity {
 
 
     constructor (entity: Entity) :
             this(
                     entityID = entity.toIdString(),
+                    shipmentID = entity.getLink("shipment")!!.toIdString(),
                     containerName = entity.getProperty("containerName") as String,
-                    containerType = entity.getProperty("containerType") as String,
-                    items = entity.getLinks("item").map {
-                        it.toIdString()
-                    }
+                    containerType = entity.getProperty("containerType") as String
             )
 
     override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
-        val newEntity = txn.newEntity(type);
-        newEntity.setProperty("containerName", containerName);
-        newEntity.setProperty("containerType", containerType);
+        val newContainer = txn.newEntity(type)
+        newContainer.setProperty("containerName", containerName)
+        newContainer.setProperty("containerType", containerType)
 
-        items.forEach {
-            val itemEntityId = PersistentEntityId.toEntityId(it, store)
-            val itemEntity = txn.getEntity(itemEntityId)
-            newEntity.addLink("item", itemEntity)
-        }
+        val shipmentEntityId = PersistentEntityId.toEntityId(shipmentID, store)
+        val shipmentEntity = txn.getEntity(shipmentEntityId)
+        newContainer.setLink("shipment", shipmentEntity)
+        shipmentEntity.addLink("containers", newContainer)
 
-        return newEntity.toIdString()
+        return newContainer.toIdString()
     }
 
     override fun update(txn: StoreTransaction, store: PersistentEntityStoreImpl): String {

@@ -11,7 +11,7 @@ import jetbrains.exodus.entitystore.Entity
 
 //{"entityID":"","cancelled":false,"poNum":"","vendorID":"4-0","designColorID":"3-2","orderedYards":500,"shippedYards":0,"FOB":0,"LDP":500,"customerPOID":"1-1","millETS":"1980-01-01".}
 data class Item(override val entityID: String, val cancelled: Boolean, val ourPOID: String?, val vendorInvoiceID: String?,
-                val vendorID: String, val designColorID: String, val orderedYards: Double,
+                val containerID: String?,  val vendorID: String, val designColorID: String, val orderedYards: Double,
                 val shippedYards: Double, val fob: Int, val ldp: Int,
                 val customerPOID: String, val millETS: String) : com.ipmus.entities.Entity {
 
@@ -30,6 +30,7 @@ data class Item(override val entityID: String, val cancelled: Boolean, val ourPO
                     cancelled = entity.getProperty(cancelledPropName) == "true",
                     ourPOID = entity.getLink(ourPOPropName)?.toIdString(),
                     vendorInvoiceID = entity.getLink(vendorInvoiceIDPropName)?.toIdString(),
+                    containerID = entity.getLink(containerIDPropName)?.toIdString(),
                     vendorID = entity.getLink(vendorPropName)!!.toIdString(),
                     designColorID = entity.getLink(designColorPropName)!!.toIdString(),
                     orderedYards = (entity.getProperty(orderedYardsPropName) as String).toDouble(),
@@ -105,23 +106,49 @@ data class Item(override val entityID: String, val cancelled: Boolean, val ourPO
                 val vendorEntityId = PersistentEntityId.toEntityId(vendorID, store)
                 val vendorEntity = txn.getEntity(vendorEntityId)
                 vendorEntity.deleteLink("vendorInvoiceItems", item)
+
+                // add item to vendorShipmentItems. This items are available to add to a container
+                vendorEntity.addLink("vendorShipmentItems", item)
+            }
+        }
+        if (containerID != null) {
+            val container = item.getLink(containerIDPropName)
+            if (container == null) {
+                // link item and container
+                val containerEntityID = PersistentEntityId.toEntityId(containerID, store)
+                val containerEntity = txn.getEntity(containerEntityID)
+                item.setLink(containerIDPropName, containerEntity)
+                containerEntity.addLink("items", item)
+
+                // remove item from vendor invoice shipment items
+                val vendorEntityId = PersistentEntityId.toEntityId(vendorID, store)
+                val vendorEntity = txn.getEntity(vendorEntityId)
+                vendorEntity.deleteLink("vendorShipmentItems", item)
+
+                // add item to items available to add to our invoice to customer
+                val customerPOEntityId = PersistentEntityId.toEntityId(customerPOID, store)
+                val customerPOEntity = txn.getEntity(customerPOEntityId)
+                val po = PurchaseOrder(customerPOEntity)
+                val customerEntityId = PersistentEntityId.toEntityId(po.customerID)
+                val customerEntity = txn.getEntity(customerEntityId)
+                customerEntity.addLink("customerInvoiceItems", item)
             }
         }
         updateEntityProps(item)
         return item.toIdString()
     }
 
-    fun updateEntityProps(item: Entity) {
+    private fun updateEntityProps(item: Entity) {
         if (cancelled) {
-            item.setProperty(cancelledPropName, "true");
+            item.setProperty(cancelledPropName, "true")
         } else {
-            item.setProperty(cancelledPropName, "false");
+            item.setProperty(cancelledPropName, "false")
         }
         item.setProperty(orderedYardsPropName, "%.2f".format(orderedYards))
         item.setProperty(shippedYardsPropName, "%.2f".format(shippedYards))
         item.setProperty(FOBPropName, fob.toString())
         item.setProperty(LDPPropName, ldp.toString())
-        item.setProperty(millETSPropName, millETS.toString())
+        item.setProperty(millETSPropName, millETS)
     }
 
     companion object {
@@ -130,6 +157,7 @@ data class Item(override val entityID: String, val cancelled: Boolean, val ourPO
         val cancelledPropName = "cancelled"
         val ourPOPropName = "ourPO"
         val vendorInvoiceIDPropName = "vendorInvoiceID"
+        val containerIDPropName = "containerID"
         val vendorPropName = "vendor"
         val designColorPropName = "designColor"
         val orderedYardsPropName = "orderedYards"
