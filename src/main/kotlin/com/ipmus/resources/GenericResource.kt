@@ -8,11 +8,20 @@ import jetbrains.exodus.entitystore.*
 
 open class GenericResource<out T>(private val resourceType: String, private val factory : (Entity) -> T) {
 
-    fun getAll() : String {
+    fun getAll(queryParam: String? = null) : String {
         val out = ByteArrayOutputStream()
         val mapper = jacksonObjectMapper()
         val items: List<T> = entityStore.computeInReadonlyTransaction { txn ->
-            txn.getAll(resourceType).map { factory(it) }
+            if (queryParam != null) {
+                val tokens = queryParam.split(":")
+                if (tokens.size == 1) {
+                    txn.find(resourceType, tokens[0], true)
+                } else {
+                    txn.find(resourceType, tokens[0], tokens[1])
+                }
+            } else {
+                txn.getAll(resourceType)
+            }.map { factory(it) }
         }
         mapper.writeValue(out, items)
         return out.toString()

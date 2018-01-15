@@ -4,22 +4,16 @@ package com.ipmus.resources
  * Created by mozturk on 7/26/2017.
  */
 
-
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ipmus.Configuration
 import com.ipmus.entities.Item
-import jetbrains.exodus.entitystore.PersistentEntityStores
-import java.io.ByteArrayOutputStream
 import javax.ws.rs.*
 import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
 
 @Path("items")
 class ItemResource : GenericResource<Item>(Item.type, ::Item) {
     @GET
     @Produces("application/json")
-    fun getItems(): String {
-        return getAll()
+    fun getItems(@QueryParam("search") search: String?): String {
+        return getAll(search)
     }
 
     @Path("/{entityID}")

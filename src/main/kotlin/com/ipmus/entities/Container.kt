@@ -36,7 +36,10 @@ data class Container(override val entityID: String, val shipmentID: String, val 
     }
 
     override fun update(txn: StoreTransaction, store: PersistentEntityStoreImpl): String {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val entityID = PersistentEntityId.toEntityId(this.entityID, store)
+        val container = txn.getEntity(entityID)
+        container.setProperty("containerType", containerType)
+        return container.toIdString()
     }
 
     companion object {

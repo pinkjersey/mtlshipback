@@ -1,16 +1,9 @@
 package com.ipmus.resources
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.ipmus.Configuration
 import com.ipmus.entities.Container
-import jetbrains.exodus.entitystore.EntityRemovedInDatabaseException
-import jetbrains.exodus.entitystore.PersistentEntityId
-import jetbrains.exodus.entitystore.PersistentEntityStores
-import java.io.ByteArrayOutputStream
+import com.ipmus.entities.Item
 import javax.ws.rs.*
-import javax.ws.rs.POST
 import javax.ws.rs.core.MediaType
-import javax.ws.rs.core.Response
 
 
 /**
@@ -31,10 +24,23 @@ class ContainerResource : GenericResource<Container>(Container.type, ::Container
         return getSpecific(entityID)
     }
 
+    @Path("/{entityID}/items")
+    @GET
+    @Produces("application/json")
+    fun containerItems(@PathParam("entityID") entityID: String) : String {
+        return getChildren<Item>(entityID, "items", ::Item)
+    }
+
     @PUT
     @Consumes(MediaType.APPLICATION_JSON)
     fun newContainer(entity: Container) : String {
         return newEntity(entity)
+    }
+
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    fun updateContainer(entity: Container) : String {
+        return updateEntity(entity)
     }
 
     /*

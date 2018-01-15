@@ -55,6 +55,13 @@ class VendorResource : GenericResource<Vendor>(Vendor.type, ::Vendor) {
         return getChildren<Item>(entityID, "vendorInvoiceItems", ::Item)
     }
 
+    @Path("/{entityID}/vendorShipmentItems")
+    @GET
+    @Produces("application/json")
+    fun vendorShipmentItems(@PathParam("entityID") entityID: String) : String {
+        return getChildren<Item>(entityID, "vendorShipmentItems", ::Item)
+    }
+
     @Path("/{entityID}/vendorInvoices")
     @GET
     @Produces("application/json")

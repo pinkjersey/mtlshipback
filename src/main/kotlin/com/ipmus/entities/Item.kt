@@ -3,6 +3,7 @@ package com.ipmus.entities
 import java.time.LocalDate
 import jetbrains.exodus.entitystore.*
 import jetbrains.exodus.entitystore.Entity
+import org.slf4j.LoggerFactory
 
 /**
  * This constructor is the primary constructor and is used by the secondary constructor when creating the
@@ -17,6 +18,7 @@ data class Item(override val entityID: String, val cancelled: Boolean, val ourPO
                 val millETS: String)
     : com.ipmus.entities.Entity {
 
+    private val logger = LoggerFactory.getLogger(Item::class.java)
 
     init {
         // sanity check dates
@@ -53,6 +55,8 @@ data class Item(override val entityID: String, val cancelled: Boolean, val ourPO
         // Create item
         val item = txn.newEntity(type)
         updateEntityProps(item)
+        // this is not visible to the front end
+        item.setProperty(readyToShipPropName, false)
 
         // add item to purchase order
         val customerPOEntityId = PersistentEntityId.toEntityId(customerPOID, store)
@@ -98,6 +102,8 @@ data class Item(override val entityID: String, val cancelled: Boolean, val ourPO
         if (vendorInvoiceID != null) {
             val vendorInvoice = item.getLink(vendorInvoiceIDPropName)
             if (vendorInvoice == null) {
+                // mark item ready to ship
+                item.setProperty(readyToShipPropName, true)
                 // item assigned to vendor invoice
                 val vendorInvoiceEntityID = PersistentEntityId.toEntityId(vendorInvoiceID, store)
                 val vendorInvoiceEntity = txn.getEntity(vendorInvoiceEntityID)
@@ -114,8 +120,12 @@ data class Item(override val entityID: String, val cancelled: Boolean, val ourPO
             }
         }
         if (containerID != null) {
+            logger.debug("Container ID set on the incoming message");
             val container = item.getLink(containerIDPropName)
             if (container == null) {
+                logger.debug("Container ID not set in the database. This means the item is added to a container");
+                // item shipped
+                item.setProperty(readyToShipPropName, false)
                 // link item and container
                 val containerEntityID = PersistentEntityId.toEntityId(containerID, store)
                 val containerEntity = txn.getEntity(containerEntityID)
@@ -168,5 +178,6 @@ data class Item(override val entityID: String, val cancelled: Boolean, val ourPO
         val LDPPropName = "LDP"
         val customerPOPropName = "customerPO"
         val millETSPropName = "millETS"
+        val readyToShipPropName = "readyToShip"
     }
 }
