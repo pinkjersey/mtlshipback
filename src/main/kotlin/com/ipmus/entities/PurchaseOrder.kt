@@ -3,9 +3,7 @@ package com.ipmus.entities
 import jetbrains.exodus.entitystore.*
 import jetbrains.exodus.entitystore.Entity
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import com.fasterxml.jackson.annotation.JsonFormat.Value.forPattern
 
 /**
  * @property date PO date in YYYYMMDD format

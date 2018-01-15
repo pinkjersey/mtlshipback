@@ -10,7 +10,8 @@ import jetbrains.exodus.entitystore.StoreTransaction
  * blue, then each combination of design and color would be one entity. Doggo, Red; Doggo, Blue; Doggo, Green.
  */
 
-data class DesignColor(override val entityID: String, val designID: String, val color: String) : com.ipmus.entities.Entity {
+data class DesignColor(override val entityID: String, val designID: String, val color: String)
+    : com.ipmus.entities.Entity {
     constructor (entity: Entity) :
             this(
                     entityID = entity.toIdString(),
@@ -19,8 +20,8 @@ data class DesignColor(override val entityID: String, val designID: String, val 
             )
 
     override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
-        val designColor = txn.newEntity(type);
-        designColor.setProperty("color", color);
+        val designColor = txn.newEntity(type)
+        designColor.setProperty("color", color)
 
         val designEntityId = PersistentEntityId.toEntityId(designID, store)
         val designEntity = txn.getEntity(designEntityId)

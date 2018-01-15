@@ -37,7 +37,7 @@ data class Shipment(override val entityID: String, val shipmentTypeID: String,
      * Saves the entity to the data store.
      */
     override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
-        val shipment = txn.newEntity(type);
+        val shipment = txn.newEntity(type)
         shipment.setProperty("status", status.toString())
         shipment.setProperty("eta", eta)
 

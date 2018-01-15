@@ -14,8 +14,8 @@ data class Design(override val entityID: String, val designName: String) : com.i
             this(entityID = entity.toIdString(), designName = entity.getProperty("designName") as String)
 
     override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String{
-        val design = txn.newEntity(type);
-        design.setProperty("designName", designName);
+        val design = txn.newEntity(type)
+        design.setProperty("designName", designName)
         return design.toIdString()
     }
 

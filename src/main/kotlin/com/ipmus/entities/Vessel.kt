@@ -14,8 +14,8 @@ data class Vessel(override val entityID: String, val vesselName: String) : com.i
             this(entityID = entity.toIdString(), vesselName = entity.getProperty("vesselName") as String)
 
     override fun create(txn: StoreTransaction, store: PersistentEntityStoreImpl) : String {
-        val newEntity = txn.newEntity(type);
-        newEntity.setProperty("vesselName", vesselName);
+        val newEntity = txn.newEntity(type)
+        newEntity.setProperty("vesselName", vesselName)
         return newEntity.toIdString()
     }
 

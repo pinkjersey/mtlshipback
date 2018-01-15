@@ -7,8 +7,8 @@ import jetbrains.exodus.entitystore.StoreTransaction
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class OurPurchaseOrder(override val entityID: String, val vendorID: String,
-                       val ourPO: String, val date: String)
+class OurPurchaseOrder(override val entityID: String, val vendorID: String, val ourPO: String,
+                       val date: String)
     : com.ipmus.entities.Entity {
     init {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")

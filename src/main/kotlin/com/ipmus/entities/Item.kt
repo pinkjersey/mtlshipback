@@ -10,10 +10,12 @@ import jetbrains.exodus.entitystore.Entity
  */
 
 //{"entityID":"","cancelled":false,"poNum":"","vendorID":"4-0","designColorID":"3-2","orderedYards":500,"shippedYards":0,"FOB":0,"LDP":500,"customerPOID":"1-1","millETS":"1980-01-01".}
-data class Item(override val entityID: String, val cancelled: Boolean, val ourPOID: String?, val vendorInvoiceID: String?,
-                val containerID: String?,  val vendorID: String, val designColorID: String, val orderedYards: Double,
-                val shippedYards: Double, val fob: Int, val ldp: Int,
-                val customerPOID: String, val millETS: String) : com.ipmus.entities.Entity {
+data class Item(override val entityID: String, val cancelled: Boolean, val ourPOID: String?,
+                val vendorInvoiceID: String?, val containerID: String?, val vendorID: String,
+                val designColorID: String, val orderedYards: Double, val shippedYards: Double,
+                val fob: Int,val ldp: Int, val customerPOID: String,
+                val millETS: String)
+    : com.ipmus.entities.Entity {
 
 
     init {
