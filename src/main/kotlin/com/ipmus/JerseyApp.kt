@@ -21,15 +21,16 @@ class JerseyApp : ResourceConfig(setOf(ItemResource::class.java, CustomerResourc
         BrokerResource::class.java, VesselResource::class.java, VendorResource::class.java,
         DesignResource::class.java, DesignColorResource::class.java, ShipmentTypeResource::class.java,
         ShipmentResource::class.java, ContainerResource::class.java, PurchaseOrderResource::class.java,
-        OurPurchaseOrderResource::class.java, VendorInvoiceResource::class.java, LoginResource::class.java)) {
+        OurPurchaseOrderResource::class.java, VendorInvoiceResource::class.java, LoginResource::class.java,
+        OurInvoiceResource::class.java)) {
     private val logger = LoggerFactory.getLogger(JerseyApp::class.java)
 
     init {
         register(AuthFilter::class.java)
         register(CORSResponseFilter::class.java)
         register(ContextResolver<ObjectMapper> { ObjectMapper().registerModule(KotlinModule()) })
-        val opsys = System.getProperty("os.name").toLowerCase();
-        logger.info("JerseyApp init ${opsys}")
+        val opsys = System.getProperty("os.name").toLowerCase()
+        logger.info("JerseyApp init $opsys")
         val userFile = if (opsys.contains("windows")) {
             "c:/temp/users.txt"
         } else {
@@ -62,10 +63,10 @@ class JerseyApp : ResourceConfig(setOf(ItemResource::class.java, CustomerResourc
             if (tokens.size == 3) {
                 logger.info("Adding user ${tokens[1]}")
                 es.executeInTransaction { txn ->
-                    val user = txn.newEntity(userType);
-                    user.setProperty("email", tokens[0]);
-                    user.setProperty("name", tokens[1]);
-                    user.setProperty("pass", DigestPassword.doWork(tokens[2]));
+                    val user = txn.newEntity(userType)
+                    user.setProperty("email", tokens[0])
+                    user.setProperty("name", tokens[1])
+                    user.setProperty("pass", DigestPassword.doWork(tokens[2]))
                 }
             }
         }
